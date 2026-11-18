@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OmniFAQ AI — Project Presentation</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0A1628;
+    --navy2: #112240;
+    --cyan: #0891B2;
+    --cyan2: #06B6D4;
+    --cyan3: #67E8F9;
+    --teal: #0D9488;
+    --white: #F8FAFC;
+    --gray: #94A3B8;
+    --card-bg: rgba(255,255,255,0.05);
+    --border: rgba(8,145,178,0.25);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--navy);
+    color: var(--white);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    user-select: none;
+  }
+
+  /* ---- SLIDE CONTAINER ---- */
+  .deck { width: 100vw; height: 100vh; position: relative; }
+
+  .slide {
+    position: absolute; inset: 0;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 60px;
+    opacity: 0;
+    transform: translateX(60px);
+    transition: all 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+    background: var(--navy);
+    overflow: hidden;
+  }
+  .slide.active {
+    display: flex;
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .slide.exit {
+    display: flex;
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+
+  /* ---- AMBIENT GLOWS ---- */
+  .glow1 {
+    position: absolute;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(8,145,178,0.15) 0%, transparent 70%);
+    top: -200px; right: -100px;
+    pointer-events: none;
+  }
+  .glow2 {
+    position: absolute;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(13,148,136,0.12) 0%, transparent 70%);
+    bottom: -100px; left: -80px;
+    pointer-events: none;
+  }
+
+  /* ---- PROGRESS BAR ---- */
+  #progress-bar {
+    position: fixed; top: 0; left: 0; height: 3px;
+    background: linear-gradient(90deg, var(--cyan), var(--teal), var(--cyan2));
+    transition: width 0.4s ease;
+    z-index: 100;
+    border-radius: 0 2px 2px 0;
+  }
+
+  /* ---- NAV CONTROLS ---- */
+  .nav-controls {
+    position: fixed; bottom: 30px; left: 50%;
+    transform: translateX(-50%);
+    display: flex; align-items: center; gap: 20px;
+    z-index: 100;
+    background: rgba(10,22,40,0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+    padding: 10px 24px; border-radius: 50px;
+  }
+  .nav-btn {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    background: rgba(8,145,178,0.1);
+    color: var(--cyan2);
+    font-size: 18px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .nav-btn:hover { background: rgba(8,145,178,0.3); transform: scale(1.1); }
+  .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  #slide-counter {
+    font-size: 13px; font-weight: 700;
+    color: var(--gray); min-width: 70px; text-align: center;
+    letter-spacing: 0.05em;
+  }
+
+  /* ---- SLIDE DOTS ---- */
+  .slide-dots {
+    position: fixed; right: 24px; top: 50%;
+    transform: translateY(-50%);
+    display: flex; flex-direction: column; gap: 8px;
+    z-index: 100;
+  }
+  .dot {
+    width: 6px; height: 6px; border-radius: 3px;
+    background: rgba(148,163,184,0.3);
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .dot.active { background: var(--cyan2); height: 20px; }
+
+  /* ---- SLIDE NUMBER ---- */
+  .slide-num {
+    position: fixed; top: 20px; right: 50px;
+    font-size: 11px; font-weight: 700;
+    color: rgba(148,163,184,0.5);
+    letter-spacing: 0.1em;
+    z-index: 100;
+  }
+
+  /* ---- TYPOGRAPHY ---- */
+  .font-head { font-family: 'Space Grotesk', sans-serif; }
+
+  .tag-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 14px;
+    border-radius: 50px;
+    background: rgba(8,145,178,0.15);
+    border: 1px solid rgba(8,145,178,0.3);
+    font-size: 11px; font-weight: 700;
+    color: var(--cyan2);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    margin-bottom: 20px;
+  }
+
+  .main-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 800;
+    font-size: clamp(36px, 5vw, 64px);
+    line-height: 1.1;
+    background: linear-gradient(135deg, #FFFFFF 0%, #67E8F9 50%, #0891B2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 16px;
+  }
+
+  .sub-title {
+    font-size: clamp(16px, 2vw, 22px);
+    color: var(--gray);
+    font-weight: 400;
+    line-height: 1.5;
+    max-width: 700px;
+    text-align: center;
+  }
+
+  .section-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 800;
+    font-size: clamp(26px, 3.5vw, 44px);
+    line-height: 1.15;
+    margin-bottom: 10px;
+  }
+  .section-title span {
+    background: linear-gradient(135deg, var(--cyan), var(--cyan2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ---- CARDS ---- */
+  .glass-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px;
+    padding: 24px;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .glass-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(8,145,178,0.5), transparent);
+  }
+  .glass-card:hover {
+    background: rgba(8,145,178,0.08);
+    border-color: rgba(8,145,178,0.3);
+    transform: translateY(-3px);
+  }
+
+  .cyan-card {
+    background: linear-gradient(135deg, rgba(8,145,178,0.15), rgba(13,148,136,0.1));
+    border: 1px solid rgba(8,145,178,0.3);
+    border-radius: 16px;
+    padding: 20px 24px;
+  }
+
+  /* ---- TABLES ---- */
+  .ppt-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 6px;
+  }
+  .ppt-table th {
+    padding: 12px 16px;
+    background: rgba(8,145,178,0.2);
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--cyan3);
+    text-align: left;
+  }
+  .ppt-table th:first-child { border-radius: 10px 0 0 10px; }
+  .ppt-table th:last-child { border-radius: 0 10px 10px 0; }
+  .ppt-table td {
+    padding: 11px 16px;
+    background: rgba(255,255,255,0.03);
+    font-size: 13px; color: #CBD5E1;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .ppt-table td:first-child {
+    border-left: 1px solid rgba(255,255,255,0.05);
+    border-radius: 8px 0 0 8px;
+    font-weight: 600; color: var(--white);
+  }
+  .ppt-table td:last-child {
+    border-right: 1px solid rgba(255,255,255,0.05);
+    border-radius: 0 8px 8px 0;
+  }
+
+  /* ---- BADGE ---- */
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 50px;
+    font-size: 11px; font-weight: 700;
+  }
+  .badge-easy { background: rgba(34,197,94,0.15); color: #4ADE80; border: 1px solid rgba(34,197,94,0.3); }
+  .badge-med  { background: rgba(234,179,8,0.15);  color: #FDE047; border: 1px solid rgba(234,179,8,0.3); }
+  .badge-hard { background: rgba(239,68,68,0.15);  color: #FCA5A5; border: 1px solid rgba(239,68,68,0.3); }
+  .badge-cyan { background: rgba(8,145,178,0.15); color: var(--cyan2); border: 1px solid rgba(8,145,178,0.3); }
+
+  /* ---- ICON BOX ---- */
+  .icon-box {
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--cyan), var(--teal));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+    box-shadow: 0 6px 20px rgba(8,145,178,0.3);
+  }
+
+  /* ---- FLOW ARROW ---- */
+  .flow-step {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 16px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(8,145,178,0.2);
+    border-radius: 10px;
+    font-size: 13px; font-weight: 600;
+    color: #CBD5E1;
+  }
+  .flow-arrow { color: var(--cyan2); font-size: 20px; }
+
+  /* ---- STAT BOX ---- */
+  .stat-box {
+    background: linear-gradient(135deg, rgba(8,145,178,0.15), rgba(13,148,136,0.1));
+    border: 1px solid rgba(8,145,178,0.3);
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+  }
+  .stat-num {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 36px; font-weight: 800;
+    background: linear-gradient(135deg, var(--cyan), var(--cyan2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .stat-label { font-size: 12px; color: var(--gray); font-weight: 600; margin-top: 4px; }
+
+  /* ---- CODE BLOCK ---- */
+  .code-block {
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(8,145,178,0.2);
+    border-radius: 14px;
+    padding: 20px 24px;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    color: #94A3B8;
+    overflow: hidden;
+  }
+  .code-block .kw { color: #7C3AED; }
+  .code-block .str { color: #4ADE80; }
+  .code-block .num { color: var(--cyan2); }
+  .code-block .cm { color: #64748B; }
+
+  /* ---- GRID HELPERS ---- */
+  .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; width: 100%; }
+  .g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; width: 100%; }
+  .g4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; width: 100%; }
+  .flex-row { display: flex; align-items: center; gap: 12px; }
+  .flex-col { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+  .full-w { width: 100%; }
+  .center { text-align: center; }
+  .mb8 { margin-bottom: 8px; }
+  .mb16 { margin-bottom: 16px; }
+  .mb24 { margin-bottom: 24px; }
+  .mt8 { margin-top: 8px; }
+  .mt16 { margin-top: 16px; }
+
+  /* ---- DIVIDER ---- */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(8,145,178,0.4), transparent);
+    width: 100%; margin: 16px 0;
+  }
+
+  /* ---- SLIDE-SPECIFIC LAYOUTS ---- */
+  .content-wrap { width: 100%; max-width: 1100px; margin: 0 auto; }
+
+  /* SLIDE 1 - TITLE */
+  #s1 { text-align: center; }
+
+  /* Feature bullet */
+  .feat-item {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 12px 16px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 12px;
+    transition: all 0.2s;
+  }
+  .feat-item:hover {
+    background: rgba(8,145,178,0.08);
+    border-color: rgba(8,145,178,0.3);
+  }
+  .feat-icon { font-size: 22px; flex-shrink: 0; margin-top: 1px; }
+  .feat-text h4 { font-size: 13px; font-weight: 700; color: var(--white); margin-bottom: 3px; }
+  .feat-text p  { font-size: 12px; color: var(--gray); line-height: 1.4; }
+
+  /* Tech pill */
+  .tech-pill {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 18px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    font-size: 13px; font-weight: 600;
+  }
+  .tech-pill .layer-label { font-size: 10px; color: var(--gray); font-weight: 500; }
+
+  /* DB column */
+  .db-col {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(8,145,178,0.2);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .db-col-header {
+    padding: 8px 14px;
+    background: rgba(8,145,178,0.2);
+    font-size: 11px; font-weight: 700;
+    color: var(--cyan2); text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .db-col-row {
+    padding: 7px 14px;
+    border-top: 1px solid rgba(255,255,255,0.04);
+    font-size: 12px; color: #CBD5E1;
+    display: flex; justify-content: space-between;
+  }
+  .db-col-row span { color: var(--gray); font-size: 11px; }
+
+  /* Highlight line */
+  .hl { color: var(--cyan2); font-weight: 700; }
+  .hl-g { color: #4ADE80; font-weight: 700; }
+  .hl-y { color: #FDE047; font-weight: 700; }
+
+  /* Security item */
+  .sec-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 18px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px;
+  }
+  .sec-icon-box {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: linear-gradient(135deg, rgba(8,145,178,0.3), rgba(13,148,136,0.2));
+    display: flex; align-items: center; justify-content: center; font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  /* Final slide */
+  #s15 { text-align: center; }
+  .final-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+    width: 100%; margin-top: 20px;
+  }
+  .final-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(8,145,178,0.2);
+    border-radius: 14px;
+    padding: 16px 12px;
+    text-align: center;
+  }
+  .final-card .fc-icon { font-size: 26px; margin-bottom: 8px; }
+  .final-card h4 { font-size: 12px; font-weight: 700; color: var(--white); margin-bottom: 4px; }
+  .final-card p  { font-size: 11px; color: var(--gray); line-height: 1.4; }
+
+  /* Keyboard hint */
+  .key-hint {
+    position: fixed; bottom: 90px; right: 30px;
+    font-size: 11px; color: rgba(148,163,184,0.4);
+    display: flex; gap: 6px; align-items: center;
+  }
+  .key {
+    padding: 2px 6px; border-radius: 4px;
+    border: 1px solid rgba(148,163,184,0.2);
+    font-size: 10px; color: rgba(148,163,184,0.5);
+  }
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+<div class="slide-dots" id="dots"></div>
+<div class="slide-num" id="slide-num">01 / 15</div>
+<div class="key-hint"><span class="key">←</span><span class="key">→</span> Arrow keys to navigate</div>
+
+<div class="deck" id="deck">
+
+  <!-- ============================================================ -->
+  <!-- SLIDE 1 — TITLE -->
+  <!-- ============================================================ -->
+  <div class="slide active" id="s1">
+    <div class="glow1"></div><div class="glow2"></div>
+    <div class="tag-pill">🎓 Project Presentation</div>
+    <div class="main-title">OmniFAQ AI</div>
+    <p style="font-size:clamp(18px,2.5vw,26px);color:var(--cyan2);font-weight:700;margin-bottom:12px;">Tech Interview Preparation Platform</p>
+    <p class="sub-title">AI-powered platform jahan tech students real interview questions practice kar sakte hain — JavaScript, React, Node.js, SQL, System Design!</p>
+    <div style="display:flex;gap:16px;margin-top:32px;">
+      <div style="padding:10px 22px;border-radius:50px;background:linear-gradient(135deg,var(--cyan),var(--teal));font-size:13px;font-weight:700;color:#fff;">Powered by Google Gemini AI 🤖</div>
+      <div style="padding:10px 22px;border-radius:50px;background:rgba(255,255,255,0.07);border:1px solid var(--border);font-size:13px;font-weight:600;color:var(--gray);">PHP + MySQL + XAMPP 🗄️</div>
+    </div>
+    <div style="position:absolute;bottom:60px;width:100%;max-width:700px;display:flex;justify-content:center;gap:40px;">
+      <div style="text-align:center;"><div style="font-size:28px;font-weight:800;color:var(--cyan2);">18+</div><div style="font-size:11px;color:var(--gray);">Pre-loaded Questions</div></div>
+      <div style="width:1px;background:var(--border);"></div>
+      <div style="text-align:center;"><div style="font-size:28px;font-weight:800;color:var(--cyan2);">5</div><div style="font-size:11px;color:var(--gray);">Tech Categories</div></div>
+      <div style="width:1px;background:var(--border);"></div>
+      <div style="text-align:center;"><div style="font-size:28px;font-weight:800;color:var(--cyan2);">3</div><div style="font-size:11px;color:var(--gray);">Difficulty Levels</div></div>
+      <div style="width:1px;background:var(--border);"></div>
+      <div style="text-align:center;"><div style="font-size:28px;font-weight:800;color:var(--cyan2);">2</div><div style="font-size:11px;color:var(--gray);">User Roles</div></div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- SLIDE 2 — PROBLEM STATEMENT -->
+  <!-- ============================================================ -->
+  <div class="slide" id="s2">
+    <div class="glow1"></div><div class="glow2"></div>
+    <div class="content-wrap">
+      <div class="tag-pill">😓 Problem Statement</div>
+      <div class="section-title mb16">Tech Interviews mein log<br><span>kyun fail hote hain?</span></div>
+      <div class="g2" style="margin-top:24px;">
+        <div class="flex-col">
+          <div class="feat-item">
+            <div class="feat-icon">📚</div>
+            <div class="feat-text">
+              <h4>Scattered Resources</h4>
+              <p>Alag alag websites pe dhundna padta hai — koi ek jagah nahi</p>
+            </div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-icon">❓</div>
+            <div class="feat-text">
+              <h4>Practice Questions Nahi Milte</h4>
+              <p>Real interview-level questions easily available nahi hote</p>
+            </div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-icon">📝</div>
+            <div class="feat-text">
+              <h4>Detailed Answers Ka Abaav</h4>
+              <p>Sirf questions hain — proper model answers nahi milte</p>
+            </div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-icon">📊</div>
+            <div class="feat-text">
+              <h4>Koi Tracking System Nahi</h4>
+              <p>Students progress track nahi kar sakte ki kya practice kiya</p>
+            </div>
+          </div>
+        </div>
+        <div class="cyan-card" style="display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:20px;">
+          <div style="font-size:64px;">💡</div>
+          <div>
+            <div style="font-size:13px;color:var(--gray);text-transform:uppercase;letter-spacing:0.08em;font-weight:700;margin-bottom:8px;">Hamara Solution</div>
+            <div style="font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:800;background:linear-gradient(135deg,var(--cyan),var(--cyan2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">OmniFAQ AI</div>
+            <p style="color:var(--gray);font-size:14px;margin-top:10px;line-height:1.6;">Ek hi platform pe<br>sab kuch — questions, answers,<br>AI generation & analytics!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- SLIDE 3 — TECH STACK -->
+  <!-- ============================================================ -->
+  <div class="slide" id="s3">
+    <div class="glow1"></div><div class="glow2"></div>
+    <div class="content-wrap">
+      <div class="tag-pill">⚙️ Technology Stack</div>
+      <div class="section-title mb24">Project mein kya kya<br><span>use kiya gaya hai?</span></div>
+      <div class="g2">
+        <div class="flex-col">
+          <div class="tech-pill">
+            <div class="icon-box" style="width:40px;height:40px;font-size:18px;">🎨</div>
+            <div>
+              <div class="layer-label">FRONTEND</div>
+              <div>HTML5 + CSS3 + jQuery</div>
+            </div>
+            <div style="margin-left:auto;"><span class="badge badge-cyan">UI Layer</span></div>
+          </div>
+          <div class="tech-pill">
+            <div class="icon-box" style="width:40px;height:40px;font-size:18px;">⚙️</div>
+            <div>
+              <div class="layer-label">BACKEND</div>
+              <div>PHP 8 (REST API)</div>
+            </div>
+            <div style="margin-left:auto;"><span class="badge badge-cyan">Server Logic</span></div>
+          </div>
+          <div class="tech-pill">
+            <div class="icon-box" style="width:40px;height:40px;font-size:18px;">🗄️</div>
+            <div>
+              <div class="layer-label">DATABASE</div>
+              <div>MySQL — ai_faq_db</div>
+            </div>
+            <div style="margin-left:auto;"><span class="badge badge-cyan">Data Store</span></div>
+          </div>
+          <div class="tech-pill">
+            <div class="icon-box" style="width:40px;height:40px;font-size:18px;">🤖</div>
+            <div>
+              <div class="layer-label">AI ENGINE</div>
+              <div>Google Gemini API</div>
+            </div>
+            <div style="margin-left:auto;"><span class="badge badge-cyan">AI Power</span></div>
+          </div>
+          <div class="tech-pill">
+            <div class="icon-box" style="width:40px;height:40px;font-size:18px;">🖥️</div>
+            <div>
+              <div class="layer-label">SERVER</div>
+              <div>Apache (XAMPP)</div>
+            </div>
+            <div style="margin-left:auto;"><span class="badge badge-cyan">Hosting</span></div>
+          </div>
+        </div>
+        <div class="glass-card" style="display:flex;flex-direction:column;gap:14px;justify-content:center;">
+          <div style="font-size:13px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:0.08em;">Architecture</div>
+          <div class="code-block" style="font-size:12px;line-height:1.9;">
+            <span class="cm">┌─────────────────────┐</span><br>
+            <span class="cm">│  </span><span style="color:#67E8F9;">index.html (Frontend)</span><span class="cm">  │</span><br>
+            <span class="cm">│    jQuery AJAX ↓    │</span><br>
+            <span class="cm">├─────────────────────┤</span><br>
+            <span class="cm">│  </span><span style="color:#4ADE80;">api.php  (Backend)  </span><span class="cm"> │</span><br>
+            <span class="cm">│    PDO  ↓           │</span><br>
+            <span class="cm">├─────────────────────┤</span><br>
+            <span class="cm">│  </span><span style="color:#FDE047;">MySQL DB (ai_faq_db)</span><span class="cm"> │</span><br>
+            <span class="cm">│  </span><span style="color:#C084FC;">Gemini AI (optional)</span><span class="cm"> │</span><br>
+            <span class="cm">└─────────────────────┘</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- SLIDE 4 — PROJECT FILES -->
+  <!-- ============================================================ -->
+  <div class="slide" id="s4">
+    <div class="glow1"></div><div class="glow2"></div>
+    <div class="content-wrap">
+      <div class="tag-pill">📁 File Structure</div>
+      <div class="section-title mb24">Project mein <span>5 main files</span> hain</div>
+      <div class="g2">
+        <div class="flex-col">
+          <div class="feat-item">
+            <div style="width:44px;height:44px;border-radius:10px;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🌐</div>
+            <div class="feat-text">
+              <h4>index.html <span style="color:var(--gray);font-weight:400;">(1041 lines)</span></h4>
+              <p>Puri website ka UI — Registration, Login, Dashboard, Admin Panel sab ek file mein</p>
+            </div>
+          </div>
+          <div class="feat-item">
+            <div style="width:44px;height:44px;border-radius:10px;background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.3);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">⚙️</div>
+            <div class="feat-text">
+              <h4>api.php <span style="color:var(--gray);font-weight:400;">(598 lines)</span></h4>
+              <p>Backend REST API — 9 actions handle karta hai: login, register, FAQs, AI, Admin, Analytics</p>
+            </div>
+          </div>
+          <div class="feat-item">
+            <div style="width:44px;height:44px;border-radius:10px;background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🔌</div>
+            <div class="feat-text">
+              <h4>db.php <span style="color:var(--gray);font-weight:400;">(67 lines)</span></h4>
+              <p>Database connection + Gemini API key — local vs live server auto-detect karta hai</p>
+            </div>
+          </div>
+          <div class="feat-item">
+            <div style="width:44px;height:44px;border-radius:10px;background:rgba(8,145,178,0.15);border:1px solid rgba(8,145,178,0.3);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🗃️</div>
+            <div class="feat-text">
+              <h4>schema.sql <span style="color:var(--gray);font-weight:400;">(233 lines)</span></h4>
+              <p>Database ka blueprint — 3 tables create karta hai + 18 pre-loaded interview questions</p>
+            </div>
+          </div>
+          <div class="feat-item">
+            <div style="width:44px;height:44px;border-radius:10px;background:rgba(234,179,8,0.15);border:1px solid rgba(234,179,8,0.3);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🎨</div>
+            <div class="feat-text">
+              <h4>style.css <span style="color:var(--gray);font-weight:400;">(design)</span></h4>
+              <p>Dark glassmorphism theme, animations, skeleton loaders, responsive layout</p>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div class="cyan-card" style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+            <div style="font-family:monospace;font-size:12px;line-height:2;color:#94A3B8;">
+              <span style="color:#67E8F9;">📁</span> <span style="color:var(--white);font-weight:700;">khushi project/</span><br>
+              &nbsp;&nbsp;<span style="color:#67E8F9;">├──</span> <span style="color:#4ADE80;">index.html</span> &nbsp;<span style="color:var(--gray);">← Frontend UI</span><br>
+              &nbsp;&nbsp;<span style="color:#67E8F9;">├──</span> <span style="color:#C084FC;">api.php</span> &nbsp;&nbsp;&nbsp;<span style="color:var(--gray);">← Backend API</span><br>
+              &nbsp;&nbsp;<span style="color:#67E8F9;">├──</span> <span style="color:#FDE047;">db.php</span> &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--gray);">← DB Connect</span><br>
+              &nbsp;&nbsp;<span style="color:#67E8F9;">├──</span> <span style="color:#FB923C;">schema.sql</span> <span style="color:var(--gray);">← DB Tables</span><br>
+              &nbsp;&nbsp;<span style="color:#67E8F9;">└──</span> <span style="color:#60A5FA;">style.css</span> &nbsp;<span style="color:var(--gray);">← Styling</span>
+            </div>
+          </div>
+          <div class="glass-card" style="text-align:center;">
+            <div style="font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">Total Code</div>
+            <div style="font-size:32px;font-weight:800;background:linear-gradient(135deg,var(--cyan),var(--cyan2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">~2000+</div>
+            <div style="font-size:12px;color:var(--gray);">Lines of Code</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- SLIDE 5 — DATABASE DESIGN -->
+  <!-- ============================================================ -->
+  <div class="slide" id="s5">
+    <div class="glow1"></div><div class="glow2"></div>
+    <div class="content-wrap">
+      <div class="tag-pill">🗄️ Database Design</div>
+      <div class="section-title mb24"><span>3 Tables</span> — Complete Data Architecture</div>
+      <div class="g3">
+        <div class="flex-col">
+          <div style="padding:10px 14px;background:rgba(8,145,178,0.2);border-radius:10px;font-size:12px;font-weight:700;color:var(--cyan2);text-align:center;">📋 users</div>
+          <div class="db-col">
+            <div class="db-col-row">id <span>INT · PK · Auto</span></div>
+            <div class="db-col-row">full_name <span>VARCHAR(100)</span></div>
+            <div class="db-col-row">email <span>VARCHAR · Unique</span></div>
+            <div class="db-col-row">password <span>VARCHAR · Hashed</span></div>
+            <div class="db-col-row" style="color:var(--cyan2);">role <span>ENUM · user/admin</span></div>
+            <div class="db-col-row">created_at <span>TIMESTAMP</span></div>
+          </div>
+          <div class="cyan-card" style="font-size:12px;color:var(--gray);line-height:1.5;">Registered users ka data store hota hai. Password <span class="hl">encrypted</span> hota hai.</div>
+        </div>
+        <div class="flex-col">
+          <div style="padding:10px 14px;background:rgba(13,148,136,0.2);border-radius:10px;font-size:12px;font-weight:700;color:#2DD4BF;text-align:center;">📚 faqs</div>
+          <div class="db-col">
+            <div class="db-col-row">id <span>INT · PK · Auto</span></div>
+            <div class="db-col-row" style="color:var(--cyan2);">question <span>VARCHAR(500)</span></div>
+            <div class="db-col-row" style="color:var(--cyan2);">answer <span>TEXT · Long</span></div>
+            <div class="db-col-row">category <span>VARCHAR(50)</span></div>
+            <div class="db-col-row">difficulty <span>Easy/Medium/Hard</span></div>
+            <div class="db-col-row">tags <span>VARCHAR(255)</span></div>
+            <div class="db-col-row">views <span>INT · Counter</span></div>
+          </div>
+          <div style="padding:12px;background:rgba(13,148,136,0.1);border:1px solid rgba(13,148,136,0.25);border-radius:10px;font-size:12px;color:var(--gray);line-height:1.5;">Interview questions + answers. <span style="color:#2DD4BF;font-weight:700;">FULLTEXT INDEX</span> for fast search.</div>
+        </div>
+        <div class="flex-col">
+          <div style="padding:10px 14px;background:rgba(139,92,246,0.2);border-radius:10px;font-size:12px;font-weight:700;color:#A78BFA;text-align:center;">📊 search_analytics</div>
+          <div class="db-col">
+            <div class="db-col-row">id <span>INT · PK · Auto</span></div>
+            <div class="db-col-row" style="color:#A78BFA;">query_text <span>VARCHAR</span></div>
+            <div class="db-col-row">field_category <span>VARCHAR</span></div>
+            <div class="db-col-row">difficulty <span>VARCHAR</span></div>
+            <div class="db-col-row">matched_results <span>INT · Count</span></div>
+            <div class="db-col-row" style="color:#FB923C;">is_unresolved <span>BOOLEAN</span></div>
+            <div class="db-col-row">searched_at <span>TIMESTAMP</span></div>
+          </div>
+          <div style="padding:12px;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.25);border-radius:10px;font-size:12px;color:var(--gray);line-height:1.5;">Har search ka log. <span style="color:#A78BFA;font-weight:700;">is_unresolved</span> track karta hai kahan answer nahi mila.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- SLIDE 6 — USER AUTH FEATURE -->
+  <!-- ============================================================ -->
+  <div class="slide" id="s6">
+    <div class="glow1"></div><div class="glow2"></div>
+    <div class="content-wrap">
+      <div class="tag-pill">👤 Feature 1 & 2</div>
+      <div class="section-title mb24">User <span>Registration & Login</span> System</div>
+      <div class="g2">
+        <div class="flex-col">
+          <div class="glass-card">
+            <div style="font-size:13px;font-weight:700;color:var(--cyan2);margin-bottom:14px;">📝 Registration Flow</div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div class="flow-step">1️⃣ User naam, email, password deta hai</div>
+              <div class="flow-step">2️⃣ Email format validate hota hai</div>
+              <div class="flow-step">3️⃣ Duplicate email check hota hai</div>
+              <div class="flow-step">4️⃣ Password <strong style="color:var(--cyan2);">encrypt</strong> hota hai (bcrypt)</div>
+              <div class="flow-step">5️⃣ MySQL mein <code style="color:#4ADE80;">INSERT</code> hota hai</div>
+              <div class="flow-step">6️⃣ <strong style="color:#4ADE80;">✓ Account ready!</strong> Dashboard pe redirect</div>
+            </div>
+          </div>
+        </div>
+        <div class="flex-col">
+          <div class="glass-card">
+            <div style="font-size:13px;font-weight:700;color:var(--cyan2);margin-bottom:14px;">🔑 Login Flow</div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div class="flow-step">1️⃣ Email + Password enter karo</div>
+              <div class="flow-step">2️⃣ DB se user record fetch hota hai</div>
+              <div class="flow-step">3️⃣ <code style="color:#C084FC;">password_verify()</code> se match check</div>
+              <div class="flow-step">4️⃣ Session <code style="color:#FDE047;">localStorage</code> mein save hoti hai</div>
+              <div class="flow-step">5️⃣ Role check — user / admin?</div>
+              <div class="flow-step">6️⃣ <strong style="color:#4ADE80;">✓ Dashboard ya Admin Panel!</strong></div>
+            </div>
+          </div>
+          <div class="cyan-card" style="font-size:12px;line-height:1.7;color:var(--gray);">
+            🔐 <span class="hl">Security:</span> PHP <code>password_hash()</code> — bcrypt algorithm use hoti hai. Plain text password kabhi store nahi hota. PDO Prepared Statements se SQL Injection impossible hai.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- SLIDE 7 — SEARCH FEATURE -->
+  <!-- ============================================================ -->
+  <div class="slide" id="s7">
+    <div class="glow1"></div><div class="glow2"></div>
+    <div class="content-wrap">
+      <div class="tag-pill">🔍 Feature 3</div>
+      <div class="section-title mb24"><span>Smart Search Bar</span> — Intelligent Question Finder</div>
+      <div class="g2">
+        <div class="flex-col">
+          <div class="glass-card">
+            <div style="font-size:13px;font-weight:700;color:var(--cyan2);margin-bottom:14px;">Kaise Kaam Karta Hai?</div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div class="feat-item">
+                <div class="feat-icon">⌨️</div>
+                <div class="feat-text">
+                  <h4>Debounced Search</h4>
+                  <p>Type karte karte search hota hai — 400ms ruk ke API call karta hai (server pe load nahi)</p>
+                </div>
+              </div>
+              <div class="feat-item">
+                <div class="feat-icon">🏷️</div>
+                <div class="feat-text">
+                  <h4>Quick Suggestion Pills</h4>
+                  <p>JavaScript ✦, React ⚛️, Node.js 💻, SQL 🗄️, System Design 🌐 — one click topics</p>
+                </div>
+              </div>
+              <div class="feat-item">
+                <div class="feat-icon">🧠</div>
+                <div class="feat-text">
+                  <h4>Relevance Scoring</h4>
+                  <p>Question = 4 pts, Tags = 3 pts, Answer = 1 pt — best match top pe aata hai</p>
+                </div>
+              </div>
+              <div class="feat-item">
+                <div class="feat-icon">📊</div>
+                <div class="feat-text">
+                  <h4>Auto Analytics Logging</h4>
+                  <p>Har search automatically <code>search_analytics</code> table mein save hota hai</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="flex-col">
+          <div class="cyan-card">
+            <div style="font-size:13px;font-weight:700;color:var(--cyan2);margin-bottom:12px;">🎯 Search Results mein milta hai:</div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;"><span style="color:#4ADE80;">✓</span> Question cards (category + difficulty badge)</div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;"><span style="color:#4ADE80;">✓</span> Detailed model answers</div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;"><span style="color:#4ADE80;">✓</span> Category filter pills (dynamic)</div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;"><span style="color:#4ADE80;">✓</span> View count per question</div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;"><span style="color:#4ADE80;">✓</span> Skeleton loading animation</div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;"><span style="color:#4ADE80;">✓</span> "No results" → AI Generate button</div>
+            </div>
+          </div>
+          <div class="glass-card">
+            <div style="font-size:12px;color:var(--gray);margin-bottom:10px;font-weight:700;">Difficulty Filter Badges:</div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+              <span class="badge badge-easy" style="padding:6px 14px;font-size:12px;">🟢 Easy</span>
+              <span class="badge badge-med"  style="padding:6px 14px;font-size:12px;">🟡 Medium</span>
+              <span class="badge badge-hard" style="padding:6px 14px;font-size:12px;">🔴 Hard</span>
+            </div>
+            <div style="margin-top:12px;font-size:12px;color:var(--gray);">Category wise filter: JavaScript, React, Node.js, SQL, System Design + All</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- SLIDE 8 — AI FEATURE -->
+  <!-- ============================================================ -->
+  <div class="slide" id="s8">
+    <div class="glow1"></div><div class="glow2"></div>
+    <div class="content-wrap">
+      <div class="tag-pill">🤖 Feature 4 — Star Feature!</div>
+      <div class="section-title mb24"><span>Google Gemini AI</span> Question Generator</div>
+      <div class="g2">
+        <div class="flex-col">
+          <div class="glass-card">
+            <div style="font-size:13px;font-weight:700;color:var(--cyan2);margin-bottom:14px;">🔄 AI Generation Flow</div>
+            <div style="display:flex;flex-direction:column;gap:6px;font-size:13px;">
+              <div class="flow-step">🔍 User topic search karta hai (e.g. "Docker")</div>
+              <div style="text-align:center;color:var(--cyan2);">↓</div>
+              <div class="flow-step">❌ Database mein koi result nahi mila</div>
+              <div style="text-align:center;color:var(--cyan2);">↓</div>
+              <div class="flow-step">✨ "Generate AI Questions" button click</div>
+              <div style="text-align:center;color:var(--cyan2);">↓</div>
+              <div class="flow-step">📡 api.php → Google Gemini API call</div>
+              <div style="text-align:center;color:var(--cyan2);">↓</div>
+              <div class="flow-step" style="border-color:rgba(8,145,178,0.4);">🧠 Gemini generates 3-4 real questions + answers</div>
+              <div style="text-align:center;color:var(--cyan2);">↓</div>
+              <div class="flow-step" style="color:#4ADE80;border-color:rgba(34,197,94,0.3);">💾 MySQL mein save → User ko display</div>
+            </div>
+          </div>
+        </div>
+        <div class="flex-col">
+          <div class="cyan-card">
+            <div style="font-size:13px;font-weight:700;color:var(--cyan2);margin-bottom:10px;">AI ko kya bheja jaata hai?</div>
+            <div class="code-block" style="font-size:11px;line-height:1.8;">
+              <span class="cm">"Generate 3-4 realistic technical</span><br>
+              <span class="cm">interview questions on topic:</span><br>
+              <span class="str">"Docker"</span><br><br>
+              <span class="cm">Each object must have:</span><br>
+              <span class="kw">question</span>: interview question<br>
+              <span class="kw">answer</span>: detailed model answer<br>
+              <span class="kw">category</span>: topic name<br>
+              <span class="kw">difficulty</span>: Easy/Medium/Hard<br>
+              <span class="kw">tags</span>: comma-separated
+            </div>
+          </div>
+          <div class="glass-card">
+            <div style="font-size:13px;font-weight:700;color:var(--cyan2);margin-bottom:10px;">🌟 Smart Self-Learning Feature</div>
+            <p style="font-size:13px;color:var(--gray);line-height:1.6;">AI se aaye questions <strong style="color:var(--white);">permanently database mein save</strong> ho jaate hain. Agli baar koi same topic search kare — AI call nahi hoga, seedha DB se milega! 🚀</p>
+            <div style="margin-top:12px;padding:8px 12px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.2);border-radius:8px;font-size:12px;color:#4ADE80;">System khud seekhta rehta hai time ke saath!</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- SLIDE 9 — ADMIN PANEL -->
+  <!-- ============================================================ -->
+  <div class="slide" id="s9">
+    <div class="glow1"></div><div class="glow2"></div>
+    <div class="content-wrap">
+      <div class="tag-pill">👨‍💼 Feature 5</div>
+      <div class="section-title mb24"><span>Admin Panel</span> — Complete Control Center</div>
+      <div class="g2">
+        <div class="flex-col">
+          <div class="glass-card">
+            <div style="font-size:13px;font-weight:700;color:var(--cyan2);margin-bottom:12px;">Admin Panel 4 Tabs:</div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div class="feat-item">
+                <div class="feat-icon">📋</div>
+                <div class="feat-text">
+                  <h4>Tab 1: All FAQs</h4>
+                  <p>Sabhi interview questions list mein dekhna — category, difficulty filter</p>
+                </div>
+              </div>
+              <div class="feat-item">
+                <div class="feat-icon">➕</div>
+                <div class="feat-text">
+                  <h4>Tab 2: Add / Edit FAQ</h4>
+                  <p>Naya question add karo ya existing edit karo — question, answer, category, difficulty, tags</p>
+                </div>
+              </div>
+              <div class="feat-item">
+                <div class="feat-icon">📊</div>
+                <div class="feat-text">
+                  <h4>Tab 3: Analytics Dashboard</h4>
+                  <p>Total FAQs, views, searches, resolution rate — sab stats ek jagah</p>
+                </div>
+              </div>
+              <div class="feat-item">
+                <div class="feat-icon">🔍</div>
+                <div class="feat-text">
+                  <h4>Tab 4: Unresolved Searches</h4>
+                  <p>Log search karte hain par jawab nahi milta — in topics pe naye questions add karo</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="flex-col">
+          <div class="glass-card">
+            <div style="font-size:13px;font-weight:700;color:var(--cyan2);margin-bottom:12px;">FAQ Management — CRUD Operations</div>
+            <div class="g2" style="gap:10px;">
+              <div style="padding:14px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.2);border-radius:12px;text-align:center;">
+                <div style="font-size:22px;">➕</div>
+                <div style="font-size:12px;font-weight:700;color:#4ADE80;margin-top:6px;">CREATE</div>
+                <div style="font-size:11px;color:var(--gray);">Naya question add karna</div>
+              </div>
+              <div style="padding:14px;background:rgba(8,145,178,0.1);border:1px solid rgba(8,145,178,0.2);border-radius:12px;text-align:center;">
+                <div style="font-size:22px;">👁️</div>
+                <div style="font-size:12px;font-weight:700;color:var(--cyan2);margin-top:6px;">READ</div>
+                <div style="font-size:11px;color:var(--gray);">Sabhi questions dekhna</div>
+              </div>
+              <div style="padding:14px;background:rgba(234,179,8,0.1);border:1px solid rgba(234,179,8,0.2);border-radius:12px;text-align:center;">
+                <div style="font-size:22px;">✏️</div>
+                <div style="font-size:12px;font-weight:700;color:#FDE047;margin-top:6px;">UPDATE</div>
+                <div style="font-size:11px;color:var(--gray);">Question edit karna</div>
+              </div>
+              <div style="padding:14px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);border-radius:12px;text-align:center;">
+                <div style="font-size:22px;">🗑️</div>
+                <div style="font-size:12px;font-weight:700;color:#FCA5A5;margin-top:6px;">DELETE</div>
+                <div style="font-size:11px;color:var(--gray);">Question hatana</div>
+              </div>
+            </div>
+          </div>
+          <div class="cyan-card">
+            <div style="font-size:12px;color:var(--gray);line-height:1.6;">🔒 <span class="hl">Role-Based Access:</span> Admin panel sirf un users ko dikhta hai jinka role <code style="color:#4ADE80;">'admin'</code> hai. Normal users ko yeh tab nahi dikhi.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- SLIDE 10 — ANALYTICS -->
+  <!-- ============================================================ -->
+  <div class="slide" id="s10">
+    <div class="glow1"></div><div class="glow2"></div>
+    <div class="content-wrap">
+      <div class="tag-pill">📊 Feature 6</div>
+      <div class="section-title mb24">Search <span>Analytics Dashboard</span></div>
+      <div class="g4" style="margin-bottom:20px;">
+        <div class="stat-box">
+          <div class="stat-num">📚</div>
+          <div style="font-size:22px;font-weight:800;color:var(--cyan2);">18+</div>
+          <div class="stat-label">Total FAQs</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">👁️</div>
+          <div style="font-size:22px;font-weight:800;color:var(--cyan2);">2K+</div>
+          <div class="stat-label">Total Views</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">🔍</div>
+          <div style="font-size:22px;font-weight:800;color:var(--cyan2);">All</div>
+          <div class="stat-label">Searches Logged</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">✅</div>
+          <div style="font-size:22px;font-weight:800;color:#4ADE80;">Rate%</div>
+          <div class="stat-label">Resolution Rate</div>
+        </div>
+      </div>
+      <div class="g2">
+        <div class="glass-card">
+          <div style="font-size:13px;font-weight:700;color:var(--cyan2);margin-bottom:12px;">📋 Recent Searches Log</div>
+          <p style="font-size:13px;color:var(--gray);line-height:1.6;">Last 50 searches ka complete log dikhta hai — kya search kiya, kab kiya, kitne results aaye, resolved tha ya nahi.</p>
+          <div style="margin-top:14px;display:flex;flex-direction:column;gap:6px;">
+            <div style="display:flex;justify-content:space-between;padding:8px 12px;background:rgba(34,197,94,0.1);border-radius:8px;font-size:12px;">
+              <span>"React hooks"</span><span style="color:#4ADE80;">✅ Resolved · 4 results</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:8px 12px;background:rgba(239,68,68,0.1);border-radius:8px;font-size:12px;">
+              <span>"Kubernetes"</span><span style="color:#FCA5A5;">❌ Unresolved · 0 results</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:8px 12px;background:rgba(34,197,94,0.1);border-radius:8px;font-size:12px;">
+              <span>"SQL joins"</span><span style="color:#4ADE80;">✅ Resolved · 2 results</span>
+            </div>
+          </div>
+        </div>
+        <div class="glass-card">
+          <div style="font-size:13px;font-weight:700;color:var(--cyan2);margin-bottom:12px;">🔍 Top Unresolved Queries</div>
+          <p style="font-size:13px;color:var(--gray);line-height:1.6;margin-bottom:12px;">Top 10 queries jinka jawab nahi mila — admin in topics pe nayi FAQs add kar sakta hai!</p>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:rgba(255,255,255,0.03);border-radius:8px;font-size:12px;">
+              <span>"Docker basics"</span><span style="color:#FCA5A5;font-weight:700;">5x searched</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:rgba(255,255,255,0.03);border-radius:8px;font-size:12px;">
+              <span>"TypeScript types"</span><span style="color:#FCA5A5;font-weight:700;">3x searched</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:rgba(255,255,255,0.03);border-radius:8px;font-size:12px;">
+              <span>"MongoDB queries"</span><span style="color:#FCA5A5;font-weight:700;">2x searched</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- SLIDE 11 — PRE-LOADED QUESTIONS -->
+  <!-- ============================================================ -->
+  <div class="slide" id="s11">
+    <div class="glow1"></div><div class="glow2"></div>
+    <div class="content-wrap">
+      <div class="tag-pill">📚 Pre-Loaded Content</div>
+      <div class="section-title mb24"><span>18 Expert Questions</span> — Database mein ready</div>
+      <table class="ppt-table">
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Questions</th>
+            <th>Topics Covered</th>
+            <th>Difficulty</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>⚡ JavaScript</td>
+            <td><span class="badge badge-cyan">4</span></td>
+            <td>Closures, var/let/const, Event Loop, Prototypal Inheritance</td>
+            <td><span class="badge badge-easy">Easy</span> <span class="badge badge-med">Med</span> <span class="badge badge-hard">Hard</span></td>
+          </tr>
+          <tr>
+            <td>⚛️ React</td>
+            <td><span class="badge badge-cyan">4</span></td>
+            <td>Virtual DOM, useState vs useReducer, Reconciliation, Server Components</td>
+            <td><span class="badge badge-easy">Easy</span> <span class="badge badge-med">Med</span> <span class="badge badge-hard">Hard</span></td>
+          </tr>
+          <tr>
+            <td>💻 Node.js</td>
+            <td><span class="badge badge-cyan">3</span></td>
+            <td>Express Middleware, REST vs GraphQL, Concurrency Model</td>
+            <td><span class="badge badge-easy">Easy</span> <span class="badge badge-med">Med</span> <span class="badge badge-hard">Hard</span></td>
+          </tr>
+          <tr>
+            <td>🗄️ SQL</td>
+            <td><span class="badge badge-cyan">4</span></td>
+            <td>INNER vs LEFT JOIN, ACID Properties, Indexes, Normalization</td>
+            <td><span class="badge badge-easy">Easy</span> <span class="badge badge-med">Med</span> <span class="badge badge-hard">Hard</span></td>
+          </tr>
+          <tr>
+            <td>🌐 System Design</td>
+            <td><span class="badge badge-cyan">3</span></td>
+            <td>URL Shortener Design, Rate Limiting, Load Balancing, Caching</td>
+            <td><span class="badge badge-med">Med</span> <span class="badge badge-hard">Hard</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="cyan-card" style="margin-top:16px;font-size:13px;color:var(--gray);line-height:1.6;">
+        💡 <span class="hl">Pro tip:</span> Sabhi answers industry-level detailed hain — actual interview mein kaam aayenge! Views bhi track hote hain — <span style="color:#4ADE80;">Virtual DOM question ko 320+ views</span> aa chuke hain!
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- SLIDE 12 — API BACKEND -->
+  <!-- ============================================================ -->
+  <div class="slide" id="s12">
+    <div class="glow1"></div><div class="glow2"></div>
+    <div class="content-wrap">
+      <div class="tag-pill">⚙️ Backend Architecture</div>
+      <div class="section-title mb24">REST API — <span>9 Actions</span></div>
+      <div class="g2">
+        <div>
+          <table class="ppt-table" style="font-size:12px;">
+            <thead>
+              <tr><th>API Action</th><th>Kya karta hai</th><th>Type</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>register</td><td>Naya user account banata hai</td><td><span class="badge badge-easy">Auth</span></td></tr>
+              <tr><td>login</td><td>Email + password verify karta hai</td><td><span class="badge badge-easy">Auth</span></td></tr>
+              <tr><td>get_faqs</td><td>Filter karke questions return karta hai</td><td><span class="badge badge-cyan">FAQ</span></td></tr>
+              <tr><td>ai_query</td><td>Natural language query process karta hai</td><td><span class="badge badge-med">AI</span></td></tr>
+              <tr><td>generate_ai_questions</td><td>Gemini se live questions banata hai</td><td><span class="badge badge-med">AI</span></td></tr>
+              <tr><td>ai_interactive_faq</td><td>Field + difficulty se questions laata hai</td><td><span class="badge badge-med">AI</span></td></tr>
+              <tr><td>admin_save_faq</td><td>FAQ add ya update karta hai</td><td><span class="badge badge-hard">Admin</span></td></tr>
+              <tr><td>admin_delete_faq</td><td>FAQ delete karta hai</td><td><span class="badge badge-hard">Admin</span></td></tr>
+              <tr><td>admin_get_analytics</td><td>Analytics data return karta hai</td><td><span class="badge badge-hard">Admin</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="flex-col">
+          <div class="glass-card">
+            <div style="font-size:13px;font-weight:700;color:var(--cyan2);margin-bottom:10px;">Request Format:</div>
+            <div class="code-block" style="font-size:12px;">
+              <span class="cm">// jQuery AJAX call</span><br>
+              $.ajax({<br>
+              &nbsp;&nbsp;<span class="kw">url</span>: <span class="str">'api.php'</span>,<br>
+              &nbsp;&nbsp;<span class="kw">method</span>: <span class="str">'POST'</span>,<br>
+              &nbsp;&nbsp;<span class="kw">data</span>: {<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">action</span>: <span class="str">'get_faqs'</span>,<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">search</span>: <span class="str">'React'</span><br>
+              &nbsp;&nbsp;}<br>
+              });
+            </div>
+          </div>
+          <div class="cyan-card">
+            <div style="font-size:13px;font-weight:700;color:var(--cyan2);margin-bottom:10px;">Response Format:</div>
+            <div class="code-block" style="font-size:12px;">
+              {<br>
+              &nbsp;&nbsp;<span class="kw">"success"</span>: <span style="color:#4ADE80;">true</span>,<br>
+              &nbsp;&nbsp;<span class="kw">"count"</span>: <span class="num">4</span>,<br>
+              &nbsp;&nbsp;<span class="kw">"data"</span>: [ ... ]<br>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- SLIDE 13 — SECURITY -->
+  <!-- ============================================================ -->
+  <div class="slide" id="s13">
+    <div class="glow1"></div><div class="glow2"></div>
+    <div class="content-wrap">
+      <div class="tag-pill">🔐 Security Features</div>
+      <div class="section-title mb24">Project <span>Secure kyun hai?</span></div>
+      <div class="g2">
+        <div class="flex-col">
+          <div class="sec-item">
+            <div class="sec-icon-box">🔐</div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--white);">Password Hashing (bcrypt)</div>
+              <div style="font-size:12px;color:var(--gray);margin-top:3px;">PHP <code>password_hash()</code> + <code>password_verify()</code> — plain text kabhi store nahi hota. Agar DB hack bhi ho, passwords safe rehenge.</div>
+            </div>
+          </div>
+          <div class="sec-item">
+            <div class="sec-icon-box">🛡️</div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--white);">SQL Injection Protection</div>
+              <div style="font-size:12px;color:var(--gray);margin-top:3px;">PDO Prepared Statements use hote hain — user input directly query mein kabhi nahi jaata. Hacker SQL inject nahi kar sakta.</div>
+            </div>
+          </div>
+          <div class="sec-item">
+            <div class="sec-icon-box">✅</div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--white);">Input Validation</div>
+              <div style="font-size:12px;color:var(--gray);margin-top:3px;">Server-side email validation <code>filter_var()</code>, empty field checks, email uniqueness check — sab backend pe hota hai.</div>
+            </div>
+          </div>
+        </div>
+        <div class="flex-col">
+          <div class="sec-item">
+            <div class="sec-icon-box">👑</div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--white);">Role-Based Access Control</div>
+              <div style="font-size:12px;color:var(--gray);margin-top:3px;">Admin panel sirf <code>role='admin'</code> users ko milta hai. Frontend + Backend dono jagah check hota hai.</div>
+            </div>
+          </div>
+          <div class="sec-item">
+            <div class="sec-icon-box">🌐</div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--white);">CORS Headers</div>
+              <div style="font-size:12px;color:var(--gray);margin-top:3px;">Cross-Origin Resource Sharing headers set hain — unauthorized domains se API access control hota hai.</div>
+            </div>
+          </div>
+          <div class="sec-item">
+            <div class="sec-icon-box">🏠</div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--white);">Environment Auto-Detection</div>
+              <div style="font-size:12px;color:var(--gray);margin-top:3px;">db.php automatically detect karta hai — localhost hai ya live server. Alag credentials use hote hain automatically.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- SLIDE 14 — UI DESIGN -->
+  <!-- ============================================================ -->
+  <div class="slide" id="s14">
+    <div class="glow1"></div><div class="glow2"></div>
+    <div class="content-wrap">
+      <div class="tag-pill">🎨 UI/UX Design</div>
+      <div class="section-title mb24">Premium <span>Dark Glassmorphism</span> Design</div>
+      <div class="g2">
+        <div class="flex-col">
+          <div class="glass-card">
+            <div style="font-size:13px;font-weight:700;color:var(--cyan2);margin-bottom:14px;">Design Elements:</div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div style="display:flex;align-items:center;gap:12px;font-size:13px;">
+                <div style="width:28px;height:28px;border-radius:8px;background:#112F3B;border:1px solid rgba(8,145,178,0.3);flex-shrink:0;"></div>
+                <div><span class="hl">Dark Navy Background</span> — #112F3B professional feel</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;font-size:13px;">
+                <div style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#0891B2,#06B6D4);flex-shrink:0;"></div>
+                <div><span class="hl">Cyan Gradient Accents</span> — #0891B2 → #06B6D4</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;font-size:13px;">
+                <div style="width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);backdrop-filter:blur(10px);flex-shrink:0;"></div>
+                <div><span class="hl">Glassmorphism Cards</span> — frosted glass effect</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;font-size:13px;">
+                <div style="width:28px;height:28px;border-radius:50%;background:radial-gradient(circle,rgba(8,145,178,0.5),transparent);flex-shrink:0;"></div>
+                <div><span class="hl">Glow Orbs</span> — ambient background lighting</div>
+              </div>
+            </div>
+          </div>
+          <div class="glass-card">
+            <div style="font-size:13px;font-weight:700;color:var(--cyan2);margin-bottom:12px;">Typography:</div>
+            <div style="font-size:20px;font-weight:800;font-family:'Space Grotesk',sans-serif;color:var(--white);margin-bottom:6px;">Space Grotesk — Headings</div>
+            <div style="font-size:16px;font-weight:400;font-family:'Inter',sans-serif;color:var(--gray);">Inter — Body text & UI</div>
+            <div style="font-size:12px;color:var(--gray);margin-top:10px;">Google Fonts CDN se load hota hai</div>
+          </div>
+        </div>
+        <div class="flex-col">
+          <div class="glass-card">
+            <div style="font-size:13px;font-weight:700;color:var(--cyan2);margin-bottom:12px;">Micro-Animations:</div>
+            <div style="display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--gray);">
+              <div style="display:flex;align-items:center;gap:10px;"><span style="color:#4ADE80;">✓</span> Skeleton loading — cards load se pehle placeholder</div>
+              <div style="display:flex;align-items:center;gap:10px;"><span style="color:#4ADE80;">✓</span> Toast notifications — success/error pop-up</div>
+              <div style="display:flex;align-items:center;gap:10px;"><span style="color:#4ADE80;">✓</span> AI spinner — Gemini generate karte waqt</div>
+              <div style="display:flex;align-items:center;gap:10px;"><span style="color:#4ADE80;">✓</span> Hover effects — cards pe smooth lift</div>
+              <div style="display:flex;align-items:center;gap:10px;"><span style="color:#4ADE80;">✓</span> Gradient text — titles pe shine effect</div>
+              <div style="display:flex;align-items:center;gap:10px;"><span style="color:#4ADE80;">✓</span> Responsive design — mobile friendly</div>
+            </div>
+          </div>
+          <div class="glass-card">
+            <div style="font-size:13px;font-weight:700;color:var(--cyan2);margin-bottom:12px;">Icons Library:</div>
+            <p style="font-size:13px;color:var(--gray);line-height:1.6;"><strong style="color:var(--white);">Lucide Icons</strong> — Open source, lightweight SVG icon library. CDN se load hoti hai. 400+ beautiful icons available hain.</p>
+            <div style="margin-top:10px;display:flex;gap:16px;font-size:22px;">
+              🔍 📊 ⚡ 🧠 💾 🔐 ✨ 📋
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- SLIDE 15 — SUMMARY / THANK YOU -->
+  <!-- ============================================================ -->
+  <div class="slide" id="s15">
+    <div class="glow1"></div><div class="glow2"></div>
+    <div class="tag-pill">🎯 Project Summary</div>
+    <div class="main-title" style="font-size:clamp(32px,4vw,52px);">OmniFAQ AI</div>
+    <p style="font-size:16px;color:var(--gray);margin-bottom:28px;text-align:center;">Complete Feature Summary</p>
+    <div class="final-grid" style="max-width:900px;">
+      <div class="final-card">
+        <div class="fc-icon">👤</div>
+        <h4>User Auth</h4>
+        <p>Secure Registration & Login with bcrypt encryption</p>
+      </div>
+      <div class="final-card">
+        <div class="fc-icon">🔍</div>
+        <h4>Smart Search</h4>
+        <p>Real-time debounced search with relevance scoring</p>
+      </div>
+      <div class="final-card">
+        <div class="fc-icon">🤖</div>
+        <h4>Google Gemini AI</h4>
+        <p>Live AI question generation for any topic</p>
+      </div>
+      <div class="final-card">
+        <div class="fc-icon">📚</div>
+        <h4>18+ Questions</h4>
+        <p>Expert-level pre-loaded interview questions</p>
+      </div>
+      <div class="final-card">
+        <div class="fc-icon">👨‍💼</div>
+        <h4>Admin Panel</h4>
+        <p>Full CRUD + Analytics Dashboard</p>
+      </div>
+      <div class="final-card">
+        <div class="fc-icon">📊</div>
+        <h4>Search Analytics</h4>
+        <p>Track queries, resolution rate & unresolved gaps</p>
+      </div>
+      <div class="final-card">
+        <div class="fc-icon">🔐</div>
+        <h4>Secure</h4>
+        <p>SQL Injection proof, Role-based access control</p>
+      </div>
+      <div class="final-card">
+        <div class="fc-icon">🌐</div>
+        <h4>Dual Deployment</h4>
+        <p>XAMPP local + InfinityFree live hosting</p>
+      </div>
+      <div class="final-card">
+        <div class="fc-icon">🎨</div>
+        <h4>Premium UI</h4>
+        <p>Dark glassmorphism with micro-animations</p>
+      </div>
+    </div>
+    <div style="margin-top:24px;padding:16px 32px;border-radius:50px;background:linear-gradient(135deg,rgba(8,145,178,0.2),rgba(13,148,136,0.15));border:1px solid rgba(8,145,178,0.3);font-size:22px;font-weight:800;font-family:'Space Grotesk',sans-serif;">
+      🙏 Thank You!
+    </div>
+  </div>
+
+</div>
+
+<!-- NAV CONTROLS -->
+<div class="nav-controls">
+  <button class="nav-btn" id="btn-prev" onclick="changeSlide(-1)">&#8592;</button>
+  <div id="slide-counter">1 / 15</div>
+  <button class="nav-btn" id="btn-next" onclick="changeSlide(1)">&#8594;</button>
+</div>
+
+<script>
+  const TOTAL = 15;
+  let current = 1;
+
+  // Build dots
+  const dotsEl = document.getElementById('dots');
+  for (let i = 1; i <= TOTAL; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 1 ? ' active' : '');
+    d.onclick = () => goTo(i);
+    dotsEl.appendChild(d);
+  }
+
+  function goTo(n) {
+    if (n < 1 || n > TOTAL) return;
+    const prev = document.getElementById('s' + current);
+    prev.classList.remove('active');
+    prev.classList.add('exit');
+    setTimeout(() => { prev.classList.remove('exit'); }, 500);
+
+    current = n;
+    const next = document.getElementById('s' + current);
+    next.style.transform = 'translateX(60px)';
+    next.style.opacity = '0';
+    next.style.display = 'flex';
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        next.classList.add('active');
+      });
+    });
+
+    // Update UI
+    document.getElementById('slide-counter').textContent = current + ' / ' + TOTAL;
+    document.getElementById('slide-num').textContent = String(current).padStart(2,'0') + ' / ' + String(TOTAL).padStart(2,'0');
+    document.getElementById('progress-bar').style.width = (current / TOTAL * 100) + '%';
+    document.getElementById('btn-prev').disabled = current === 1;
+    document.getElementById('btn-next').disabled = current === TOTAL;
+    document.querySelectorAll('.dot').forEach((d, i) => {
+      d.classList.toggle('active', i + 1 === current);
+    });
+  }
+
+  function changeSlide(dir) { goTo(current + dir); }
+
+  // Keyboard
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') changeSlide(1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   changeSlide(-1);
+    if (e.key === 'Home') goTo(1);
+    if (e.key === 'End')  goTo(TOTAL);
+  });
+
+  // Init
+  document.getElementById('btn-prev').disabled = true;
+  document.getElementById('progress-bar').style.width = (1/TOTAL*100)+'%';
+</script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+.git
+.gitignore
+.dockerignore
+.DS_Store
+*.zip
+*.log
+render.yaml

@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OmniFAQ AI - Tech Interview Preparation Platform</title>
+    <meta name="description" content="Practice real-world tech interview questions across JavaScript, React, Node.js, SQL, and System Design with AI-powered feedback.">
+    
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- jQuery CDN -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" style="position:fixed;top:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none;"></div>
+
+    <!-- Background Ambient Glows -->
+    <div class="glow-orb-primary"></div>
+    <div class="glow-orb-secondary"></div>
+
+    <!-- ================================================================ -->
+    <!-- HEADER NAVIGATION                                                 -->
+    <!-- ================================================================ -->
+    <header class="glass-nav" style="position:sticky;top:0;z-index:40;">
+        <div style="max-width:1200px;margin:0 auto;padding:0 24px;height:72px;display:flex;align-items:center;justify-content:space-between;">
+            
+            <!-- Brand Logo -->
+            <div id="nav-brand-logo" style="display:flex;align-items:center;gap:12px;cursor:pointer;">
+                <div style="width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,#112F3B,#0891B2,#06B6D4);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(8,145,178,0.25);">
+                    <i data-lucide="code-2" style="width:22px;height:22px;color:#fff;"></i>
+                </div>
+                <div>
+                    <span class="font-heading" style="font-weight:900;font-size:22px;color:#112F3B;">OmniFAQ <span style="background:linear-gradient(135deg,#0891B2,#06B6D4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">AI</span></span>
+                    <div style="font-size:10px;color:#0891B2;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;display:flex;align-items:center;gap:6px;">
+                        <span style="width:6px;height:6px;border-radius:50%;background:#06B6D4;display:inline-block;"></span>
+                        Tech Interview Trainer
+                    </div>
+                </div>
+            </div>
+
+            <!-- Auth Header Actions -->
+            <div id="auth-header-container">
+                <!-- Injected by JS -->
+            </div>
+        </div>
+    </header>
+
+    <!-- ================================================================ -->
+    <!-- VIEW 1: REGISTRATION PAGE                                         -->
+    <!-- ================================================================ -->
+    <div id="view-register" class="auth-container" style="position:relative;z-index:10;">
+        <div class="auth-card">
+            <div class="dark-glass-drawer" style="border-radius:24px;overflow:hidden;">
+                
+                <!-- Header -->
+                <div style="padding:32px 32px 24px;background:#112F3B;text-align:center;">
+                    <div style="width:56px;height:56px;border-radius:18px;background:linear-gradient(135deg,#0891B2,#06B6D4);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+                        <i data-lucide="user-plus" style="width:28px;height:28px;color:#fff;"></i>
+                    </div>
+                    <h2 class="font-heading" style="font-weight:900;font-size:26px;color:#fff;margin-bottom:6px;">Create Your Account</h2>
+                    <p style="font-size:13px;color:#94A3B8;">Start practicing tech interview questions today</p>
+                </div>
+
+                <!-- Registration Form -->
+                <div style="padding:28px 32px 32px;background:rgba(17,47,59,0.95);">
+                    <form id="form-register" style="display:flex;flex-direction:column;gap:16px;">
+                        <div>
+                            <label style="display:block;font-size:12px;font-weight:700;color:#CBD5E1;margin-bottom:6px;">Full Name</label>
+                            <input type="text" id="reg-name" class="auth-input" placeholder="Enter your full name" required>
+                        </div>
+                        <div>
+                            <label style="display:block;font-size:12px;font-weight:700;color:#CBD5E1;margin-bottom:6px;">Email Address</label>
+                            <input type="email" id="reg-email" class="auth-input" placeholder="you@example.com" required>
+                        </div>
+                        <div>
+                            <label style="display:block;font-size:12px;font-weight:700;color:#CBD5E1;margin-bottom:6px;">Password</label>
+                            <input type="password" id="reg-password" class="auth-input" placeholder="Create a strong password" required>
+                        </div>
+                        <button type="submit" class="auth-btn" style="margin-top:8px;">
+                            Create Account
+                        </button>
+                    </form>
+                    <p style="text-align:center;font-size:13px;color:#94A3B8;margin-top:20px;">
+                        Already have an account? 
+                        <a href="#" id="link-to-login" style="color:#06B6D4;font-weight:700;">Sign In</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- VIEW 2: LOGIN PAGE                                                -->
+    <!-- ================================================================ -->
+    <div id="view-login" class="auth-container hidden" style="position:relative;z-index:10;">
+        <div class="auth-card">
+            <div class="dark-glass-drawer" style="border-radius:24px;overflow:hidden;">
+                
+                <!-- Header -->
+                <div style="padding:32px 32px 24px;background:#112F3B;text-align:center;">
+                    <div style="width:56px;height:56px;border-radius:18px;background:linear-gradient(135deg,#0891B2,#06B6D4);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+                        <i data-lucide="log-in" style="width:28px;height:28px;color:#fff;"></i>
+                    </div>
+                    <h2 class="font-heading" style="font-weight:900;font-size:26px;color:#fff;margin-bottom:6px;">Welcome Back</h2>
+                    <p style="font-size:13px;color:#94A3B8;">Sign in to continue your interview prep</p>
+                </div>
+
+                <!-- Login Form -->
+                <div style="padding:28px 32px 32px;background:rgba(17,47,59,0.95);">
+                    <form id="form-login" style="display:flex;flex-direction:column;gap:16px;">
+                        <div>
+                            <label style="display:block;font-size:12px;font-weight:700;color:#CBD5E1;margin-bottom:6px;">Email Address</label>
+                            <input type="email" id="login-email" class="auth-input" placeholder="you@example.com" required>
+                        </div>
+                        <div>
+                            <label style="display:block;font-size:12px;font-weight:700;color:#CBD5E1;margin-bottom:6px;">Password</label>
+                            <input type="password" id="login-password" class="auth-input" placeholder="Enter your password" required>
+                        </div>
+                        <button type="submit" class="auth-btn" style="margin-top:8px;">
+                            Sign In
+                        </button>
+                    </form>
+                    <p style="text-align:center;font-size:13px;color:#94A3B8;margin-top:20px;">
+                        Don't have an account? 
+                        <a href="#" id="link-to-register" style="color:#06B6D4;font-weight:700;">Create Account</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ================================================================ -->
+    <!-- VIEW 3: DASHBOARD (Search-First Minimal Layout)                   -->
+    <!-- ================================================================ -->
+    <div id="view-dashboard" class="hidden" style="flex-grow:1;position:relative;z-index:10;">
+        
+        <!-- Welcome & Search Container -->
+        <div id="dashboard-welcome" class="dashboard-welcome">
+            <div style="text-align:center;margin-bottom:40px;">
+                <div style="display:inline-flex;align-items:center;gap:8px;padding:8px 18px;border-radius:100px;background:#ECFEFF;border:1px solid rgba(8,145,178,0.25);font-size:11px;font-weight:800;color:#0891B2;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:20px;">
+                    <i data-lucide="sparkles" style="width:14px;height:14px;"></i>
+                    AI-Powered Interview Prep
+                </div>
+                <h1 id="welcome-heading" class="font-heading" style="font-weight:900;font-size:clamp(28px,5vw,44px);color:#112F3B;line-height:1.2;margin-bottom:12px;">
+                    What tech topic do you<br>want to practice today?
+                </h1>
+                <p style="font-size:15px;color:#64748B;font-weight:500;max-width:500px;margin:0 auto;">
+                    Search any technology and get real interview questions with model answers
+                </p>
+            </div>
+
+            <!-- Search Box -->
+            <div class="search-container">
+                <div class="search-box">
+                    <div style="padding-left:14px;color:#0891B2;">
+                        <i data-lucide="search" style="width:22px;height:22px;"></i>
+                    </div>
+                    <input type="text" id="search-input" placeholder="Enter a topic (e.g., React, SQL, Node.js, System Design)...">
+                    <button id="search-clear-btn" class="hidden" style="padding:8px;background:none;border:none;color:#94A3B8;cursor:pointer;">
+                        <i data-lucide="x-circle" style="width:20px;height:20px;"></i>
+                    </button>
+                    <button id="search-submit-btn" class="search-btn">
+                        <i data-lucide="arrow-right" style="width:18px;height:18px;"></i>
+                        <span>Search</span>
+                    </button>
+                </div>
+
+                <!-- Quick Suggestion Pills -->
+                <div id="suggestion-pills" class="suggestion-pills">
+                    <button class="suggestion-pill" data-topic="JavaScript">
+                        <span>✦</span> JavaScript
+                    </button>
+                    <button class="suggestion-pill" data-topic="React">
+                        <span>⚛️</span> React
+                    </button>
+                    <button class="suggestion-pill" data-topic="Node.js">
+                        <span>💻</span> Node.js
+                    </button>
+                    <button class="suggestion-pill" data-topic="SQL">
+                        <span>🗄️</span> SQL
+                    </button>
+                    <button class="suggestion-pill" data-topic="System Design">
+                        <span>🌐</span> System Design
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ Results Section (Hidden Initially) -->
+        <div id="faq-results-section" class="faq-results-section" style="max-width:1100px;margin:0 auto;padding:0 24px 60px;">
+            
+            <!-- Results Header -->
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid rgba(203,213,225,0.5);">
+                <div>
+                    <h2 class="font-heading" style="font-weight:800;font-size:22px;color:#112F3B;display:flex;align-items:center;gap:8px;">
+                        <i data-lucide="brain" style="width:22px;height:22px;color:#0891B2;"></i>
+                        Interview Questions
+                    </h2>
+                    <p id="results-subtitle" style="font-size:12px;color:#64748B;font-weight:500;margin-top:2px;">Showing results for your search</p>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;">
+                    <button id="btn-trigger-ai-gen" style="display:none;align-items:center;gap:6px;padding:8px 16px;border-radius:100px;background:linear-gradient(135deg,#0891B2,#0D9488);border:none;color:#fff;font-size:11px;font-weight:700;cursor:pointer;box-shadow:0 2px 8px rgba(8,145,178,0.2);">
+                        <i data-lucide="sparkles" style="width:13px;height:13px;"></i>
+                        <span>Generate Live AI Questions</span>
+                    </button>
+                    <div id="results-count" style="font-size:12px;font-weight:700;color:#0891B2;background:#ECFEFF;padding:6px 16px;border-radius:100px;border:1px solid rgba(8,145,178,0.2);">
+                        0 questions
+                    </div>
+                </div>
+            </div>
+
+            <!-- API Key Missing Alert Banner -->
+            <div id="api-key-warning" class="hidden" style="margin-bottom:20px;padding:16px 20px;background:#FEF3C7;border:1.5px solid #FDE68A;border-radius:16px;color:#92400E;font-size:13px;font-weight:600;display:flex;align-items:center;gap:10px;">
+                <i data-lucide="alert-triangle" style="width:20px;height:20px;flex-shrink:0;color:#D97706;"></i>
+                <div>
+                    <strong>AI Generation Mode is Offline:</strong> To enable real-time dynamic AI interview questions, configure your Google Gemini API Key inside <code style="background:rgba(217,119,6,0.1);padding:2px 6px;border-radius:4px;font-family:monospace;font-size:12px;">db.php</code>. Currently viewing local cached questions.
+                </div>
+            </div>
+
+            <!-- Category Filter Pills -->
+            <div id="categories-container" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:24px;">
+                <!-- Populated by JS -->
+            </div>
+
+            <!-- Loading Skeleton -->
+            <div id="faq-skeleton" class="hidden faq-grid">
+                <div class="question-card" style="pointer-events:none;">
+                    <div class="skeleton" style="height:20px;width:30%;margin-bottom:16px;"></div>
+                    <div class="skeleton" style="height:24px;width:80%;margin-bottom:12px;"></div>
+                    <div class="skeleton" style="height:60px;width:100%;"></div>
+                </div>
+                <div class="question-card" style="pointer-events:none;">
+                    <div class="skeleton" style="height:20px;width:25%;margin-bottom:16px;"></div>
+                    <div class="skeleton" style="height:24px;width:70%;margin-bottom:12px;"></div>
+                    <div class="skeleton" style="height:60px;width:100%;"></div>
+                </div>
+            </div>
+
+            <!-- AI Generating Loader Panel -->
+            <div id="ai-generating-loader" class="hidden" style="text-align:center;padding:48px 24px;background:#fff;border:1px solid rgba(8,145,178,0.25);border-radius:24px;max-width:520px;margin:30px auto;box-shadow:0 12px 32px rgba(8,145,178,0.06);">
+                <div style="display:inline-flex;align-items:center;justify-content:center;position:relative;margin-bottom:16px;">
+                    <div style="width:54px;height:54px;border-radius:50%;border:4px solid #ECFEFF;border-top-color:#0891B2;animation:spin 1s linear infinite;"></div>
+                    <i data-lucide="sparkles" style="width:20px;height:20px;color:#0891B2;position:absolute;"></i>
+                </div>
+                <h3 class="font-heading" style="font-weight:800;font-size:18px;color:#112F3B;margin-bottom:6px;">Omni AI is compiling questions...</h3>
+                <p id="ai-loader-text" style="font-size:13px;color:#64748B;max-width:380px;margin:0 auto;line-height:1.5;">
+                    Generating live technical interview questions and model answers. This takes a few seconds...
+                </p>
+            </div>
+
+            <!-- FAQ Grid -->
+            <div id="faq-grid" class="faq-grid">
+                <!-- Populated by JS -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="faq-empty" class="hidden empty-state" style="background:#fff;padding:48px 24px;border:2px dashed rgba(8,145,178,0.25);border-radius:24px;max-width:520px;margin:0 auto;">
+                <div style="width:56px;height:56px;border-radius:50%;background:#ECFEFF;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;color:#0891B2;">
+                    <i data-lucide="search-x" style="width:24px;height:24px;"></i>
+                </div>
+                <h3 class="font-heading" style="font-weight:700;font-size:18px;color:#112F3B;margin-bottom:8px;">No questions found locally</h3>
+                <p style="font-size:13px;color:#64748B;max-width:360px;margin:0 auto 20px;line-height:1.5;">
+                    We don't have cached questions on this topic. Let Omni AI build live custom questions for you right now!
+                </p>
+                <button id="btn-empty-ai-gen" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:12px;background:linear-gradient(135deg,#0891B2,#0D9488);border:none;color:#fff;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(8,145,178,0.25);transition:all 0.2s;">
+                    <i data-lucide="sparkles" style="width:14px;height:14px;"></i>
+                    <span>Generate AI Interview Questions</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ================================================================ -->
+    <!-- MAIN APPLICATION JAVASCRIPT                                       -->
+    <!-- ================================================================ -->
+    <script>
+    $(function() {
+
+        // ============================================================
+        // STATE MANAGEMENT
+        // ============================================================
+        let currentUser = JSON.parse(localStorage.getItem('omni_user')) || null;
+        let currentCategory = 'All';
+        let currentSearchTerm = '';
+        let searchDebounceTimer = null;
+        const API_ENDPOINT = 'api.php';
+
+        // Local Fallback Data — Tech Interview Questions
+        let localFaqs = JSON.parse(localStorage.getItem('omni_faqs_db')) || [
+            { id: 1, question: 'What are closures in JavaScript and why are they useful?', answer: 'A closure is a function that retains access to its outer (enclosing) function\'s variables even after the outer function has returned. Closures are created every time a function is created. They are useful for data privacy, creating factory functions, and maintaining state in asynchronous operations. Example: function outer() { let count = 0; return function inner() { return ++count; }; } — here inner() is a closure that remembers count.', category: 'JavaScript', difficulty: 'Easy', tags: 'javascript,closures,scope,functions', views: 142 },
+            { id: 2, question: 'Explain the difference between var, let, and const in JavaScript.', answer: 'var is function-scoped, hoisted to the top of its function, and can be redeclared. let is block-scoped, hoisted but not initialized (temporal dead zone), and cannot be redeclared in the same scope. const is also block-scoped like let, but its value cannot be reassigned after initialization (though object properties can still be mutated). Best practice: use const by default, let when reassignment is needed, avoid var.', category: 'JavaScript', difficulty: 'Easy', tags: 'javascript,variables,scope,es6', views: 198 },
+            { id: 3, question: 'What is the event loop in JavaScript and how does it work?', answer: 'The event loop is the mechanism that allows JavaScript to perform non-blocking I/O operations despite being single-threaded. It works by: 1) Executing synchronous code on the call stack, 2) Sending async operations (setTimeout, fetch, etc.) to Web APIs, 3) Completed callbacks are queued in the Task Queue (macrotasks) or Microtask Queue (Promises), 4) The event loop checks if the call stack is empty, then processes all microtasks first, then one macrotask, and repeats.', category: 'JavaScript', difficulty: 'Medium', tags: 'javascript,event-loop,async,concurrency', views: 275 },
+            { id: 4, question: 'What is prototypal inheritance in JavaScript?', answer: 'In JavaScript, objects can inherit properties and methods from other objects through the prototype chain. Every object has an internal [[Prototype]] link. When you access a property, JavaScript traverses up the chain until found or null. You can set prototypes using Object.create(), constructor functions with .prototype, or ES6 classes (syntactic sugar). Key difference from classical inheritance: objects inherit directly from other objects, not from classes.', category: 'JavaScript', difficulty: 'Hard', tags: 'javascript,prototype,inheritance,oop', views: 185 },
+            { id: 5, question: 'What is the Virtual DOM in React and why does it matter?', answer: 'The Virtual DOM is a lightweight, in-memory representation of the actual DOM. When state changes, React creates a new Virtual DOM tree and compares it with the previous one using a diffing algorithm (reconciliation). Only the differences (patches) are applied to the real DOM, minimizing expensive DOM operations. This makes React performant because batch updates reduce reflows/repaints and the diffing algorithm is O(n).', category: 'React', difficulty: 'Easy', tags: 'react,virtual-dom,performance,reconciliation', views: 320 },
+            { id: 6, question: 'Explain the difference between useState and useReducer hooks.', answer: 'useState is ideal for simple, independent state values (toggles, counters, form inputs). useReducer is better for complex state logic involving multiple sub-values or when the next state depends on the previous one. useReducer accepts a reducer function (state, action) => newState and returns [state, dispatch]. Use useReducer when: state logic is complex, multiple values are related, or you need to pass dispatch down instead of callbacks.', category: 'React', difficulty: 'Medium', tags: 'react,hooks,state-management,useReducer', views: 210 },
+            { id: 7, question: 'How does React\'s reconciliation algorithm work?', answer: 'React\'s reconciliation (diffing) algorithm compares two Virtual DOM trees using heuristics: 1) Elements of different types produce different trees — React tears down and rebuilds. 2) Same type — keeps DOM node, updates changed attributes. 3) For child lists, React uses the "key" prop to match children. Without keys, React re-renders the entire list. The algorithm runs in O(n) time instead of O(n³) for generic tree diff.', category: 'React', difficulty: 'Hard', tags: 'react,reconciliation,diffing,performance,keys', views: 165 },
+            { id: 8, question: 'What are React Server Components and how do they differ from Client Components?', answer: 'React Server Components (RSC) run only on the server and send rendered HTML to the client — zero JavaScript shipped to browser. Benefits: zero bundle size impact, direct database access, automatic code splitting. Client Components (marked "use client") handle interactivity (state, effects, events). RSCs cannot use hooks like useState/useEffect or attach event handlers, but can import Client Components.', category: 'React', difficulty: 'Hard', tags: 'react,server-components,rsc,nextjs,rendering', views: 95 },
+            { id: 9, question: 'What is middleware in Express.js and how does it work?', answer: 'Middleware functions access request (req), response (res), and the next middleware (next). They can: execute code, modify req/res, end the cycle, or call next(). Types: Application-level (app.use), Router-level (router.use), Error-handling (4 args), Built-in (express.json(), express.static()), Third-party (cors, helmet, morgan). Middleware executes in definition order.', category: 'Node.js', difficulty: 'Easy', tags: 'nodejs,express,middleware,backend', views: 188 },
+            { id: 10, question: 'Explain the difference between REST and GraphQL APIs.', answer: 'REST uses multiple endpoints with fixed data structures. GraphQL uses a single endpoint where clients specify exactly what data they need. Key differences: 1) Over/Under-fetching: REST often returns too much or too little; GraphQL returns exactly what\'s requested. 2) Versioning: REST uses URL versioning; GraphQL evolves schemas without versions. 3) Caching: REST leverages HTTP caching easily; GraphQL requires custom caching.', category: 'Node.js', difficulty: 'Medium', tags: 'nodejs,rest,graphql,api,backend', views: 245 },
+            { id: 11, question: 'How does Node.js handle concurrency despite being single-threaded?', answer: 'Node.js uses an event-driven, non-blocking I/O model powered by libuv. I/O operations are delegated to the libuv thread pool (default 4 threads) or OS-level async mechanisms. When complete, callbacks are queued and executed on the main thread. This handles thousands of concurrent connections because the main thread never blocks for I/O. For CPU-intensive tasks, use Worker Threads or child processes.', category: 'Node.js', difficulty: 'Hard', tags: 'nodejs,concurrency,event-loop,libuv,threads', views: 178 },
+            { id: 12, question: 'What is the difference between INNER JOIN and LEFT JOIN?', answer: 'INNER JOIN returns only rows with matching values in both tables. LEFT JOIN returns ALL rows from the left table and matched rows from the right — NULLs for unmatched. Example: SELECT users.name, orders.total FROM users INNER JOIN orders ON users.id = orders.user_id — only users with orders. LEFT JOIN returns all users, NULL for those without.', category: 'SQL', difficulty: 'Easy', tags: 'sql,joins,database,queries', views: 290 },
+            { id: 13, question: 'Explain ACID properties in database transactions.', answer: 'ACID ensures reliable transactions: Atomicity — all-or-nothing; if any part fails, rollback. Consistency — database goes from one valid state to another. Isolation — concurrent transactions don\'t interfere (levels: Read Uncommitted, Read Committed, Repeatable Read, Serializable). Durability — committed data persists even during failures (write-ahead logging). Example: bank transfer must debit AND credit atomically.', category: 'SQL', difficulty: 'Medium', tags: 'sql,acid,transactions,database,consistency', views: 215 },
+            { id: 14, question: 'What are Clustered vs Non-Clustered indexes and when to use each?', answer: 'Clustered Index physically sorts table data by the index key — only ONE per table (usually primary key). Non-Clustered creates a separate structure with pointers — MULTIPLE per table. Clustered: faster range queries. Non-Clustered: faster specific lookups, useful for WHERE/JOIN/ORDER BY columns. Trade-off: too many non-clustered indexes slow INSERT/UPDATE/DELETE. B-Tree is the common underlying structure.', category: 'SQL', difficulty: 'Hard', tags: 'sql,indexes,performance,database,optimization', views: 155 },
+            { id: 15, question: 'What is database normalization and what are the normal forms?', answer: 'Normalization organizes tables to reduce redundancy and improve integrity. 1NF — atomic values, no repeating groups. 2NF — meet 1NF + remove partial dependencies. 3NF — meet 2NF + remove transitive dependencies. BCNF — every determinant is a candidate key. Denormalization is sometimes intentional for read-heavy workloads to avoid expensive JOINs.', category: 'SQL', difficulty: 'Medium', tags: 'sql,normalization,database,schema-design', views: 170 },
+            { id: 16, question: 'How would you design a URL shortener like bit.ly?', answer: 'Key components: 1) API — POST /shorten returns short code; GET /:code redirects. 2) ID Generation — counter + Base62 encoding or hash truncation. 3) Storage — Redis for fast lookups + relational DB for persistence. 4) Redirection — 301 (permanent) or 302 (temporary). 5) Scale — read-heavy, use caching, database sharding, CDN for global distribution. Handle ~100:1 read-to-write ratio.', category: 'System Design', difficulty: 'Medium', tags: 'system-design,url-shortener,scalability,architecture', views: 310 },
+            { id: 17, question: 'Explain rate limiting strategies and how to implement them.', answer: 'Rate limiting controls requests per time window. Algorithms: 1) Fixed Window — count in fixed intervals; simple but bursty. 2) Sliding Window Log — store timestamps; accurate but memory-heavy. 3) Sliding Window Counter — hybrid approach. 4) Token Bucket — refill tokens at fixed rate; allows controlled bursts. 5) Leaky Bucket — fixed processing rate; smooths traffic. Implementation: Redis INCR + EXPIRE. Return HTTP 429 with Retry-After header.', category: 'System Design', difficulty: 'Hard', tags: 'system-design,rate-limiting,api,security,scalability', views: 195 },
+            { id: 18, question: 'What is load balancing and what are common algorithms?', answer: 'Load balancer distributes traffic across servers. Algorithms: 1) Round Robin — sequential; simple. 2) Weighted Round Robin — based on capacity. 3) Least Connections — fewest active connections. 4) IP Hash — client IP based; session persistence. 5) Least Response Time — connections + speed. Types: Layer 4 (TCP, faster) vs Layer 7 (HTTP, smarter). Tools: Nginx, HAProxy, AWS ALB/NLB. Health checks ensure traffic to healthy servers only.', category: 'System Design', difficulty: 'Medium', tags: 'system-design,load-balancing,scalability,infrastructure', views: 230 },
+            { id: 19, question: 'How does caching work in distributed systems?', answer: 'Caching stores data in fast storage (RAM) to reduce latency. Strategies: 1) Cache-Aside — app checks cache, on miss reads DB and populates. 2) Write-Through — writes to cache AND DB simultaneously. 3) Write-Behind — writes cache first, async flush to DB. 4) Read-Through — cache handles fetching. Eviction: LRU, LFU, TTL. Challenges: invalidation, thundering herd, cache penetration, cache avalanche. Tools: Redis, Memcached.', category: 'System Design', difficulty: 'Hard', tags: 'system-design,caching,redis,distributed-systems,performance', views: 175 }
+        ];
+        localStorage.setItem('omni_faqs_db', JSON.stringify(localFaqs));
+
+        let localUsers = JSON.parse(localStorage.getItem('omni_users_db')) || [
+            { id: 1, full_name: 'Admin User', email: 'admin@omnifaq.ai', password: 'password', role: 'admin' },
+            { id: 2, full_name: 'John Doe', email: 'john@example.com', password: 'password', role: 'user' }
+        ];
+        localStorage.setItem('omni_users_db', JSON.stringify(localUsers));
+
+        let localAnalytics = JSON.parse(localStorage.getItem('omni_analytics_db')) || [];
+
+        const categoriesMeta = [
+            { name: 'All', icon: 'layers' },
+            { name: 'JavaScript', icon: 'file-code' },
+            { name: 'React', icon: 'atom' },
+            { name: 'Node.js', icon: 'server' },
+            { name: 'SQL', icon: 'database' },
+            { name: 'System Design', icon: 'network' }
+        ];
+
+        // Key terms for practice answer evaluation
+        const keyTermsMap = {
+            'closures': ['closure', 'outer', 'scope', 'lexical', 'enclosing', 'returned', 'data privacy', 'factory'],
+            'var let const': ['function-scoped', 'block-scoped', 'hoisted', 'temporal dead zone', 'reassign', 'redeclare'],
+            'event loop': ['call stack', 'microtask', 'macrotask', 'non-blocking', 'queue', 'single-threaded', 'async'],
+            'prototypal': ['prototype', 'chain', 'inherit', 'Object.create', '__proto__', 'constructor'],
+            'virtual dom': ['virtual', 'diffing', 'reconciliation', 'in-memory', 'patches', 'performance', 'batch'],
+            'usestate usereducer': ['useState', 'useReducer', 'dispatch', 'reducer', 'complex state', 'action'],
+            'reconciliation': ['diffing', 'key', 'heuristic', 'O(n)', 'tree', 'same type', 'different type'],
+            'server components': ['server', 'client', 'use client', 'zero bundle', 'hooks', 'interactivity'],
+            'middleware': ['req', 'res', 'next', 'app.use', 'router', 'error-handling', 'express'],
+            'rest graphql': ['endpoint', 'over-fetching', 'under-fetching', 'schema', 'query', 'resolver', 'versioning'],
+            'concurrency': ['libuv', 'thread pool', 'event-driven', 'non-blocking', 'worker', 'I/O', 'single-threaded'],
+            'inner join left join': ['INNER JOIN', 'LEFT JOIN', 'matching', 'NULL', 'rows', 'outer'],
+            'acid': ['atomicity', 'consistency', 'isolation', 'durability', 'transaction', 'rollback', 'commit'],
+            'clustered': ['clustered', 'non-clustered', 'B-Tree', 'pointer', 'primary key', 'range', 'index'],
+            'normalization': ['1NF', '2NF', '3NF', 'BCNF', 'redundancy', 'dependency', 'atomic', 'denormalization'],
+            'url shortener': ['Base62', 'hash', 'redirect', '301', '302', 'Redis', 'sharding', 'CDN'],
+            'rate limiting': ['token bucket', 'leaky bucket', 'fixed window', 'sliding window', '429', 'Redis', 'INCR'],
+            'load balancing': ['round robin', 'least connections', 'IP hash', 'Layer 4', 'Layer 7', 'health check', 'Nginx'],
+            'caching': ['cache-aside', 'write-through', 'write-behind', 'LRU', 'LFU', 'TTL', 'Redis', 'invalidation']
+        };
+
+
+        // ============================================================
+        // UTILITY FUNCTIONS
+        // ============================================================
+        function escapeHtml(str) {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function showToast(message, type) {
+            type = type || 'success';
+            const id = 'toast-' + Date.now();
+            const iconName = type === 'success' ? 'check-circle' : 'alert-circle';
+            const html = '<div id="' + id + '" class="toast ' + type + '">' +
+                '<i data-lucide="' + iconName + '" style="width:18px;height:18px;flex-shrink:0;"></i>' +
+                '<span>' + escapeHtml(message) + '</span>' +
+                '</div>';
+            $('#toast-container').append(html);
+            lucide.createIcons();
+            setTimeout(function() { $('#' + id).addClass('show'); }, 30);
+            setTimeout(function() {
+                $('#' + id).removeClass('show');
+                setTimeout(function() { $('#' + id).remove(); }, 400);
+            }, 3500);
+        }
+
+        function getCategoryBadgeClass(cat) {
+            switch ((cat || '').toLowerCase()) {
+                case 'javascript': return 'badge-js';
+                case 'react': return 'badge-react';
+                case 'node.js': return 'badge-node';
+                case 'sql': return 'badge-sql';
+                case 'system design': return 'badge-sysdesign';
+                default: return 'badge-js';
+            }
+        }
+
+        function getDifficultyBadgeClass(diff) {
+            switch ((diff || '').toLowerCase()) {
+                case 'medium': return 'badge-medium';
+                case 'hard': return 'badge-hard';
+                default: return 'badge-easy';
+            }
+        }
+
+
+        // ============================================================
+        // VIEW ROUTING
+        // ============================================================
+        function switchView(viewName) {
+            $('#view-register, #view-login, #view-dashboard').addClass('hidden');
+
+            if (viewName === 'register') {
+                $('#view-register').removeClass('hidden');
+            } else if (viewName === 'login') {
+                $('#view-login').removeClass('hidden');
+            } else if (viewName === 'dashboard') {
+                if (!currentUser) {
+                    switchView('register');
+                    return;
+                }
+                $('#view-dashboard').removeClass('hidden');
+                // Update welcome heading with user's name
+                var firstName = currentUser.full_name.split(' ')[0];
+                $('#welcome-heading').html('Hello, ' + escapeHtml(firstName) + '.<br>What tech topic do you want to practice?');
+                resetDashboardSearch();
+            }
+            lucide.createIcons();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+
+        // ============================================================
+        // AUTH HEADER STATE
+        // ============================================================
+        function updateAuthHeaderState() {
+            var $c = $('#auth-header-container');
+            if (currentUser) {
+                $c.html(
+                    '<div style="display:flex;align-items:center;gap:10px;">' +
+                        '<div style="display:flex;align-items:center;gap:8px;padding:6px 14px;border-radius:12px;background:#FDFBF7;border:1px solid rgba(8,145,178,0.15);">' +
+                            '<div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#0891B2,#06B6D4);color:#fff;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;">' +
+                                currentUser.full_name.charAt(0).toUpperCase() +
+                            '</div>' +
+                            '<span style="font-size:13px;font-weight:700;color:#112F3B;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escapeHtml(currentUser.full_name) + '</span>' +
+                        '</div>' +
+                        '<button id="btn-logout" style="padding:8px;border-radius:10px;border:none;background:none;color:#94A3B8;cursor:pointer;" title="Sign Out">' +
+                            '<i data-lucide="log-out" style="width:18px;height:18px;"></i>' +
+                        '</button>' +
+                    '</div>'
+                );
+            } else {
+                $c.html(
+                    '<button id="btn-nav-signin" style="display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:12px;background:#fff;border:1.5px solid rgba(8,145,178,0.15);font-size:13px;font-weight:700;color:#112F3B;cursor:pointer;">' +
+                        '<i data-lucide="user" style="width:16px;height:16px;color:#0891B2;"></i>' +
+                        '<span>Sign In</span>' +
+                    '</button>'
+                );
+            }
+            lucide.createIcons();
+        }
+
+
+        // ============================================================
+        // REGISTRATION
+        // ============================================================
+        $('#form-register').on('submit', function(e) {
+            e.preventDefault();
+            var name = $('#reg-name').val().trim();
+            var email = $('#reg-email').val().trim().toLowerCase();
+            var password = $('#reg-password').val().trim();
+
+            if (!name || name.length < 2) {
+                showToast('Please enter your full name (at least 2 characters).', 'error');
+                $('#reg-name').focus();
+                return;
+            }
+            if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                showToast('Please enter a valid email address.', 'error');
+                $('#reg-email').focus();
+                return;
+            }
+            if (!password || password.length < 6) {
+                showToast('Password must be at least 6 characters.', 'error');
+                $('#reg-password').focus();
+                return;
+            }
+
+            // Check duplicate email locally
+            var existing = localUsers.find(function(u) { return u.email === email; });
+            if (existing) {
+                showToast('An account with this email already exists. Please sign in.', 'error');
+                return;
+            }
+
+            // Try server API first
+            $.ajax({
+                url: API_ENDPOINT,
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ action: 'register', full_name: name, email: email, password: password }),
+                dataType: 'json',
+                success: function(res) {
+                    if (res.success) {
+                        // Also save locally for fallback
+                        localUsers.push({ id: res.user.id, full_name: name, email: email, password: password, role: 'user' });
+                        localStorage.setItem('omni_users_db', JSON.stringify(localUsers));
+                        showToast('Account created successfully! Please sign in.');
+                        $('#form-register')[0].reset();
+                        switchView('login');
+                    } else {
+                        showToast(res.error || 'Registration failed.', 'error');
+                    }
+                },
+                error: function() {
+                    // Fallback: save locally
+                    var newUser = { id: Date.now(), full_name: name, email: email, password: password, role: 'user' };
+                    localUsers.push(newUser);
+                    localStorage.setItem('omni_users_db', JSON.stringify(localUsers));
+                    showToast('Account created successfully! Please sign in.');
+                    $('#form-register')[0].reset();
+                    switchView('login');
+                }
+            });
+        });
+
+
+        // ============================================================
+        // LOGIN
+        // ============================================================
+        $('#form-login').on('submit', function(e) {
+            e.preventDefault();
+            var email = $('#login-email').val().trim().toLowerCase();
+            var password = $('#login-password').val().trim();
+
+            if (!email || !password) {
+                showToast('Please enter both email and password.', 'error');
+                return;
+            }
+
+            // Check local users first
+            var foundUser = localUsers.find(function(u) { return u.email === email && u.password === password; });
+            if (foundUser) {
+                currentUser = foundUser;
+                localStorage.setItem('omni_user', JSON.stringify(currentUser));
+                updateAuthHeaderState();
+                showToast('Welcome back, ' + currentUser.full_name + '!');
+                $('#form-login')[0].reset();
+                switchView('dashboard');
+                return;
+            }
+
+            // Try server API
+            $.ajax({
+                url: API_ENDPOINT,
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ action: 'login', email: email, password: password }),
+                dataType: 'json',
+                success: function(res) {
+                    if (res.success) {
+                        currentUser = res.user;
+                        localStorage.setItem('omni_user', JSON.stringify(currentUser));
+                        updateAuthHeaderState();
+                        showToast(res.message || 'Login successful!');
+                        $('#form-login')[0].reset();
+                        switchView('dashboard');
+                    } else {
+                        showToast(res.error || 'Invalid email or password.', 'error');
+                    }
+                },
+                error: function() {
+                    showToast('Invalid email or password.', 'error');
+                }
+            });
+        });
+
+
+        // ============================================================
+        // LOGOUT
+        // ============================================================
+        $(document).on('click', '#btn-logout', function() {
+            currentUser = null;
+            localStorage.removeItem('omni_user');
+            updateAuthHeaderState();
+            showToast('Signed out successfully.');
+            switchView('register');
+        });
+
+
+        // ============================================================
+        // NAV LINK HANDLERS
+        // ============================================================
+        $('#link-to-login').on('click', function(e) { e.preventDefault(); switchView('login'); });
+        $('#link-to-register').on('click', function(e) { e.preventDefault(); switchView('register'); });
+        $(document).on('click', '#btn-nav-signin', function() { switchView('login'); });
+        $('#nav-brand-logo').on('click', function() {
+            if (currentUser) switchView('dashboard');
+            else switchView('register');
+        });
+
+
+        // ============================================================
+        // DASHBOARD SEARCH & RESULTS TRANSITIONS
+        // ============================================================
+        function showDashboardResults() {
+            $('#dashboard-welcome').addClass('compact');
+            $('#suggestion-pills').css('opacity', '0.5');
+            $('#faq-results-section').addClass('visible');
+        }
+
+        function resetDashboardSearch() {
+            $('#dashboard-welcome').removeClass('compact');
+            $('#suggestion-pills').css('opacity', '1');
+            $('#faq-results-section').removeClass('visible');
+            $('#search-input').val('');
+            currentSearchTerm = '';
+            currentCategory = 'All';
+            $('#search-clear-btn').addClass('hidden');
+            $('.suggestion-pill').removeClass('active');
+        }
+
+
+        // ============================================================
+        // SEARCH INPUT HANDLERS
+        // ============================================================
+        $('#search-input').on('input', function() {
+            var val = $(this).val().trim();
+            currentSearchTerm = val;
+            if (val.length > 0) {
+                $('#search-clear-btn').removeClass('hidden');
+                // Deactivate pills
+                $('.suggestion-pill').removeClass('active');
+            } else {
+                $('#search-clear-btn').addClass('hidden');
+            }
+            clearTimeout(searchDebounceTimer);
+            if (val.length > 0) {
+                searchDebounceTimer = setTimeout(function() {
+                    currentCategory = 'All';
+                    fetchAndRenderFaqs();
+                }, 350);
+            } else {
+                resetDashboardSearch();
+            }
+        });
+
+        $('#search-clear-btn').on('click', function() {
+            resetDashboardSearch();
+        });
+
+        $('#search-submit-btn').on('click', function() {
+            var val = $('#search-input').val().trim();
+            if (val.length > 0) {
+                currentSearchTerm = val;
+                currentCategory = 'All';
+                fetchAndRenderFaqs();
+            }
+        });
+
+        // Suggestion pill clicks
+        $(document).on('click', '.suggestion-pill', function() {
+            var topic = $(this).data('topic');
+            $('.suggestion-pill').removeClass('active');
+            $(this).addClass('active');
+            $('#search-input').val(topic);
+            currentSearchTerm = topic;
+            currentCategory = 'All';
+            $('#search-clear-btn').removeClass('hidden');
+            fetchAndRenderFaqs();
+        });
+
+
+        // ============================================================
+        // CATEGORY FILTER PILLS
+        // ============================================================
+        function initCategoryPills() {
+            var $c = $('#categories-container');
+            $c.empty();
+            categoriesMeta.forEach(function(cat) {
+                var isActive = cat.name === currentCategory;
+                var cls = isActive ? 'cat-pill active' : 'cat-pill';
+                $c.append(
+                    '<button data-category="' + cat.name + '" class="' + cls + '">' +
+                        '<i data-lucide="' + cat.icon + '" style="width:14px;height:14px;"></i>' +
+                        '<span>' + cat.name + '</span>' +
+                    '</button>'
+                );
+            });
+            lucide.createIcons();
+        }
+
+        $(document).on('click', '.cat-pill', function() {
+            currentCategory = $(this).data('category');
+            initCategoryPills();
+            fetchAndRenderFaqs();
+        });
+
+
+        // ============================================================
+        // FETCH & RENDER FAQ QUESTIONS
+        // ============================================================
+        // ============================================================
+        // FETCH & RENDER FAQ QUESTIONS
+        // ============================================================
+        function fetchAndRenderFaqs() {
+            // Reset elements
+            $('#faq-skeleton').removeClass('hidden');
+            $('#faq-grid').empty();
+            $('#faq-empty').addClass('hidden');
+            $('#ai-generating-loader').addClass('hidden');
+            $('#api-key-warning').addClass('hidden');
+            $('#btn-trigger-ai-gen').hide();
+ 
+            showDashboardResults();
+            initCategoryPills();
+ 
+            var filtered = localFaqs.filter(function(faq) {
+                var matchCat = currentCategory === 'All' || faq.category.toLowerCase() === currentCategory.toLowerCase();
+                var matchSearch = !currentSearchTerm ||
+                    faq.question.toLowerCase().indexOf(currentSearchTerm.toLowerCase()) !== -1 ||
+                    faq.answer.toLowerCase().indexOf(currentSearchTerm.toLowerCase()) !== -1 ||
+                    faq.category.toLowerCase().indexOf(currentSearchTerm.toLowerCase()) !== -1 ||
+                    (faq.tags && faq.tags.toLowerCase().indexOf(currentSearchTerm.toLowerCase()) !== -1);
+                return matchCat && matchSearch;
+            });
+ 
+            // Log search analytics
+            if (currentSearchTerm) {
+                localAnalytics.unshift({
+                    id: Date.now(),
+                    query_text: currentSearchTerm,
+                    field_category: currentCategory,
+                    matched_results_count: filtered.length,
+                    is_unresolved: filtered.length === 0 ? 1 : 0,
+                    searched_at: new Date().toISOString().replace('T', ' ').substring(0, 19)
+                });
+                localStorage.setItem('omni_analytics_db', JSON.stringify(localAnalytics));
+            }
+ 
+            setTimeout(function() {
+                $('#faq-skeleton').addClass('hidden');
+                if (filtered.length > 0) {
+                    renderFaqGrid(filtered);
+                    $('#results-count').text(filtered.length + ' question' + (filtered.length > 1 ? 's' : ''));
+                    $('#results-subtitle').text('Showing results for "' + currentSearchTerm + '"');
+                    
+                    // Show AI generate button so they can generate fresh/new questions
+                    $('#btn-trigger-ai-gen').css('display', 'flex');
+                } else {
+                    $('#faq-empty').removeClass('hidden');
+                    $('#results-count').text('0 questions');
+                    $('#results-subtitle').text('No results for "' + currentSearchTerm + '"');
+                }
+            }, 200);
+        }
+
+        // AI Question Generation Helper
+        function generateAiQuestions(topic) {
+            if (!topic) return;
+
+            $('#faq-grid').empty();
+            $('#faq-empty').addClass('hidden');
+            $('#faq-skeleton').addClass('hidden');
+            $('#api-key-warning').addClass('hidden');
+            $('#btn-trigger-ai-gen').hide();
+            
+            $('#ai-generating-loader').removeClass('hidden');
+            $('#ai-loader-text').text('Generating live technical interview questions and model answers on "' + topic + '". This takes a few seconds...');
+
+            $.ajax({
+                url: API_ENDPOINT,
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ action: 'generate_ai_questions', topic: topic }),
+                dataType: 'json',
+                success: function(res) {
+                    $('#ai-generating-loader').addClass('hidden');
+                    if (res.success) {
+                        // Merge the new questions into our local fallback dataset to avoid re-calls
+                        res.data.forEach(function(newFaq) {
+                            if (!localFaqs.some(function(f) { return f.question === newFaq.question; })) {
+                                localFaqs.push(newFaq);
+                            }
+                        });
+                        localStorage.setItem('omni_faqs_db', JSON.stringify(localFaqs));
+                        showToast('Successfully generated ' + res.count + ' live AI questions!');
+                        fetchAndRenderFaqs();
+                    } else if (res.api_key_missing) {
+                        $('#api-key-warning').removeClass('hidden');
+                        $('#faq-empty').removeClass('hidden');
+                        showToast('Gemini API key is not configured.', 'error');
+                    } else {
+                        showToast(res.error || 'AI generation failed.', 'error');
+                        $('#faq-empty').removeClass('hidden');
+                    }
+                },
+                error: function(xhr) {
+                    $('#ai-generating-loader').addClass('hidden');
+                    // Check if JSON response was returned in error body
+                    var errRes = {};
+                    try { errRes = JSON.parse(xhr.responseText); } catch(e) {}
+                    
+                    if (errRes.api_key_missing) {
+                        $('#api-key-warning').removeClass('hidden');
+                        showToast('Gemini API key is not configured.', 'error');
+                    } else {
+                        showToast(errRes.error || 'Failed to connect to dynamic AI generator.', 'error');
+                    }
+                    $('#faq-empty').removeClass('hidden');
+                }
+            });
+        }
+
+        // Add button listeners
+        $(document).on('click', '#btn-trigger-ai-gen, #btn-empty-ai-gen', function(e) {
+            e.preventDefault();
+            generateAiQuestions(currentSearchTerm);
+        });
+
+        function renderFaqGrid(faqs) {
+            var $grid = $('#faq-grid');
+            $grid.empty();
+
+            faqs.forEach(function(faq, index) {
+                var catBadge = getCategoryBadgeClass(faq.category);
+                var diffBadge = getDifficultyBadgeClass(faq.difficulty || 'Easy');
+                var tagArray = faq.tags ? faq.tags.split(',') : [];
+                var cardId = 'q-card-' + faq.id;
+
+                var tagsHtml = '';
+                tagArray.forEach(function(tag) {
+                    tagsHtml += '<span style="padding:3px 10px;border-radius:6px;background:#F1F5F9;border:1px solid #E2E8F0;font-size:11px;color:#64748B;font-weight:500;">#' + escapeHtml(tag.trim()) + '</span>';
+                });
+
+                var html =
+                    '<div class="question-card" id="' + cardId + '" style="animation:fadeSlideIn 0.4s ease ' + (index * 0.08) + 's both;">' +
+                        // Header badges
+                        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">' +
+                            '<div style="display:flex;align-items:center;gap:8px;">' +
+                                '<span class="badge ' + catBadge + '">' + escapeHtml(faq.category) + '</span>' +
+                                '<span class="badge ' + diffBadge + '">' + escapeHtml(faq.difficulty || 'Easy') + '</span>' +
+                            '</div>' +
+                            '<div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#94A3B8;font-weight:600;">' +
+                                '<i data-lucide="eye" style="width:14px;height:14px;color:#0891B2;"></i>' +
+                                faq.views + ' views' +
+                            '</div>' +
+                        '</div>' +
+
+                        // Question
+                        '<h3 class="font-heading" style="font-weight:700;font-size:17px;color:#112F3B;line-height:1.45;margin-bottom:16px;">' +
+                            escapeHtml(faq.question) +
+                        '</h3>' +
+
+                        // Tags
+                        '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px;">' +
+                            tagsHtml +
+                        '</div>' +
+
+                        // Action Buttons
+                        '<div style="display:flex;flex-wrap:wrap;gap:10px;padding-top:16px;border-top:1px solid rgba(8,145,178,0.15);">' +
+                            '<button class="btn-reveal-answer" data-id="' + faq.id + '" style="display:flex;align-items:center;gap:6px;padding:10px 18px;border-radius:10px;background:#ECFEFF;border:1px solid rgba(8,145,178,0.2);color:#0891B2;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.2s;">' +
+                                '<i data-lucide="lightbulb" style="width:14px;height:14px;"></i>' +
+                                'Reveal Model Answer' +
+                            '</button>' +
+                            '<button class="btn-practice" data-id="' + faq.id + '" style="display:flex;align-items:center;gap:6px;padding:10px 18px;border-radius:10px;background:#F0FDF4;border:1px solid rgba(34,197,94,0.2);color:#16A34A;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.2s;">' +
+                                '<i data-lucide="pen-tool" style="width:14px;height:14px;"></i>' +
+                                'Practice Your Answer' +
+                            '</button>' +
+                        '</div>' +
+
+                        // Reveal Answer Panel
+                        '<div class="answer-reveal" id="answer-' + faq.id + '">' +
+                            '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">' +
+                                '<i data-lucide="check-circle" style="width:18px;height:18px;color:#0891B2;"></i>' +
+                                '<span class="font-heading" style="font-weight:700;font-size:14px;color:#112F3B;">Model Answer</span>' +
+                            '</div>' +
+                            '<p style="font-size:14px;color:#334155;line-height:1.7;">' + escapeHtml(faq.answer) + '</p>' +
+                        '</div>' +
+
+                        // Practice Section
+                        '<div class="practice-section" id="practice-' + faq.id + '">' +
+                            '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">' +
+                                '<i data-lucide="edit-3" style="width:18px;height:18px;color:#16A34A;"></i>' +
+                                '<span class="font-heading" style="font-weight:700;font-size:14px;color:#112F3B;">Write Your Answer</span>' +
+                            '</div>' +
+                            '<textarea class="practice-textarea" id="practice-input-' + faq.id + '" placeholder="Type your answer here... Try to include key concepts and terminology."></textarea>' +
+                            '<div style="display:flex;justify-content:flex-end;margin-top:10px;">' +
+                                '<button class="btn-submit-practice" data-id="' + faq.id + '" style="padding:10px 22px;border-radius:10px;background:linear-gradient(135deg,#112F3B,#0891B2);color:#fff;font-size:12px;font-weight:700;border:none;cursor:pointer;display:flex;align-items:center;gap:6px;">' +
+                                    '<i data-lucide="send" style="width:14px;height:14px;"></i>' +
+                                    'Evaluate My Answer' +
+                                '</button>' +
+                            '</div>' +
+                            '<div class="practice-feedback" id="feedback-' + faq.id + '"></div>' +
+                        '</div>' +
+
+                    '</div>';
+
+                $grid.append(html);
+            });
+
+            lucide.createIcons();
+        }
+
+
+        // ============================================================
+        // INTERACTIVE ANSWER REVEAL & PRACTICE
+        // ============================================================
+        $(document).on('click', '.btn-reveal-answer', function() {
+            var id = $(this).data('id');
+            var $panel = $('#answer-' + id);
+            $panel.toggleClass('visible');
+            if ($panel.hasClass('visible')) {
+                $(this).html('<i data-lucide="eye-off" style="width:14px;height:14px;"></i> Hide Model Answer');
+            } else {
+                $(this).html('<i data-lucide="lightbulb" style="width:14px;height:14px;"></i> Reveal Model Answer');
+            }
+            lucide.createIcons();
+        });
+
+        $(document).on('click', '.btn-practice', function() {
+            var id = $(this).data('id');
+            var $panel = $('#practice-' + id);
+            $panel.toggleClass('visible');
+            if ($panel.hasClass('visible')) {
+                $(this).html('<i data-lucide="x" style="width:14px;height:14px;"></i> Close Practice');
+                $('#practice-input-' + id).focus();
+            } else {
+                $(this).html('<i data-lucide="pen-tool" style="width:14px;height:14px;"></i> Practice Your Answer');
+            }
+            lucide.createIcons();
+        });
+
+        $(document).on('click', '.btn-submit-practice', function() {
+            var id = $(this).data('id');
+            var userAnswer = $('#practice-input-' + id).val().trim().toLowerCase();
+            var $feedback = $('#feedback-' + id);
+
+            if (!userAnswer || userAnswer.length < 10) {
+                showToast('Please write a more detailed answer before evaluating.', 'error');
+                return;
+            }
+
+            // Find the FAQ question
+            var faq = localFaqs.find(function(f) { return f.id == id; });
+            if (!faq) return;
+
+            // Find relevant key terms for this question
+            var matchedTerms = [];
+            var missedTerms = [];
+            var questionLower = faq.question.toLowerCase();
+
+            // Try to find matching key term set
+            var bestKeySet = null;
+            var bestMatchCount = 0;
+            for (var key in keyTermsMap) {
+                var words = key.split(' ');
+                var matchCount = 0;
+                words.forEach(function(w) {
+                    if (questionLower.indexOf(w) !== -1) matchCount++;
+                });
+                if (matchCount > bestMatchCount) {
+                    bestMatchCount = matchCount;
+                    bestKeySet = keyTermsMap[key];
+                }
+            }
+
+            if (!bestKeySet) {
+                // Fallback: extract key terms from model answer
+                bestKeySet = faq.answer.toLowerCase().match(/\b[a-z]{4,}\b/g) || [];
+                bestKeySet = [...new Set(bestKeySet)].slice(0, 8);
+            }
+
+            bestKeySet.forEach(function(term) {
+                if (userAnswer.indexOf(term.toLowerCase()) !== -1) {
+                    matchedTerms.push(term);
+                } else {
+                    missedTerms.push(term);
+                }
+            });
+
+            var score = bestKeySet.length > 0 ? Math.round((matchedTerms.length / bestKeySet.length) * 100) : 50;
+
+            var feedbackHtml = '';
+            if (score >= 70) {
+                $feedback.attr('class', 'practice-feedback visible good');
+                feedbackHtml =
+                    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">' +
+                        '<i data-lucide="trophy" style="width:18px;height:18px;"></i>' +
+                        '<strong>Great Answer! (' + score + '% coverage)</strong>' +
+                    '</div>' +
+                    '<p style="margin-bottom:8px;">You covered ' + matchedTerms.length + ' out of ' + bestKeySet.length + ' key concepts.</p>';
+                if (matchedTerms.length > 0) {
+                    feedbackHtml += '<p><strong>Key terms you mentioned:</strong> ' + matchedTerms.join(', ') + '</p>';
+                }
+                if (missedTerms.length > 0) {
+                    feedbackHtml += '<p style="margin-top:6px;"><strong>You could also mention:</strong> ' + missedTerms.join(', ') + '</p>';
+                }
+            } else {
+                $feedback.attr('class', 'practice-feedback visible needs-work');
+                feedbackHtml =
+                    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">' +
+                        '<i data-lucide="target" style="width:18px;height:18px;"></i>' +
+                        '<strong>Needs Improvement (' + score + '% coverage)</strong>' +
+                    '</div>' +
+                    '<p style="margin-bottom:8px;">You covered ' + matchedTerms.length + ' out of ' + bestKeySet.length + ' key concepts.</p>';
+                if (matchedTerms.length > 0) {
+                    feedbackHtml += '<p><strong>Good — you mentioned:</strong> ' + matchedTerms.join(', ') + '</p>';
+                }
+                feedbackHtml += '<p style="margin-top:6px;"><strong>Try to include these key terms:</strong> ' + missedTerms.join(', ') + '</p>';
+                feedbackHtml += '<p style="margin-top:8px;font-style:italic;">💡 Tip: Click "Reveal Model Answer" to see the complete expected response.</p>';
+            }
+
+            $feedback.html(feedbackHtml);
+            lucide.createIcons();
+        });
+
+
+        // ============================================================
+        // INITIALIZATION
+        // ============================================================
+        updateAuthHeaderState();
+        lucide.createIcons();
+
+        // Route to correct view on page load
+        if (currentUser) {
+            switchView('dashboard');
+        } else {
+            switchView('register');
+        }
+
+    });
+    </script>
+
+</body>
+</html>
