@@ -318,13 +318,13 @@ function handleAiQuery(PDO $pdo, array $input) {
         $params[] = $likeTerm;
     }
 
-    $sql = "SELECT *, (" . implode(' + ', $scoreConditions) . ") AS relevance_score FROM faqs WHERE 1=1";
+    $innerSql = "SELECT *, (" . implode(' + ', $scoreConditions) . ") AS relevance_score FROM faqs WHERE 1=1";
     if (!empty($field) && strtolower($field) !== 'all') {
-        $sql .= " AND category = ?";
+        $innerSql .= " AND category = ?";
         $params[] = $field;
     }
 
-    $sql .= " HAVING relevance_score > 0 ORDER BY relevance_score DESC, views DESC LIMIT 3";
+    $sql = "SELECT * FROM ({$innerSql}) AS scored WHERE relevance_score > 0 ORDER BY relevance_score DESC, views DESC LIMIT 3";
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);

@@ -15,8 +15,8 @@ WORKDIR /var/www/html
 # Copy project files
 COPY . /var/www/html/
 
-# Set file permissions for Apache web server
-RUN chown -R www-data:www-data /var/www/html
+# Set full read/write permissions for Apache web server (needed for SQLite)
+RUN chown -R www-data:www-data /var/www/html && chmod -R 777 /var/www/html
 
 # Default port
 EXPOSE 80
